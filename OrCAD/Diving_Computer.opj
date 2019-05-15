@@ -1,0 +1,96 @@
+(ExpressProject "Diving_Computer"
+  (ProjectVersion "19981106")
+  (ProjectType "Analog or A/D Mixed Mode")
+  (Folder "Design Resources"
+    (Folder "Library"
+      (File ".\library1.olb"
+        (Type "Schematic Library"))
+      (File ".\msp430fr5972ipmr.olb"
+        (Type "Schematic Library")))
+    (NoModify)
+    (File ".\diving_computer.dsn"
+      (Type "Schematic Design"))
+    (BuildFileAddedOrDeleted "x")
+    (CompileFileAddedOrDeleted "x"))
+  (Folder "Outputs")
+  (Folder "PSpice Resources"
+    (Folder "Simulation Profiles")
+    (Folder "Model Libraries"
+      (Sort User))
+    (Folder "Stimulus Files"
+      (Sort User))
+    (Folder "Include Files"
+      (Sort User)))
+  (DefaultLibraryBrowseDirectory "library\PSpice")
+  (PartMRUSelector
+    (VCC
+      (LibraryName "C:\CADENCE\SPB_17.2\TOOLS\CAPTURE\LIBRARY\CAPSYM.OLB")
+      (DeviceIndex "0"))
+    (LM7805/TO
+      (FullPartName "LM7805/TO.Normal")
+      (LibraryName "C:\CADENCE\SPB_17.2\TOOLS\CAPTURE\LIBRARY\REGULATOR.OLB")
+      (DeviceIndex "0"))
+    (MS5837
+      (FullPartName "MS5837.Normal")
+      (LibraryName "C:\USERS\GUSGH\ONEDRIVE\문서\ORCAD\LIBRARY1.OLB")
+      (DeviceIndex "0"))
+    ("NTC Thermister"
+      (FullPartName "NTC Thermister.Normal")
+      (LibraryName "C:\USERS\GUSGH\ONEDRIVE\문서\ORCAD\LIBRARY1.OLB")
+      (DeviceIndex "0"))
+    (R
+      (FullPartName "R.Normal")
+      (LibraryName
+         "C:\CADENCE\SPB_17.2\TOOLS\CAPTURE\LIBRARY\PSPICE\ANALOG.OLB")
+      (DeviceIndex "0"))
+    (GND
+      (LibraryName "C:\CADENCE\SPB_17.2\TOOLS\CAPTURE\LIBRARY\CAPSYM.OLB")
+      (DeviceIndex "0"))
+    (LCD
+      (FullPartName "LCD.Normal")
+      (LibraryName "C:\USERS\GUSGH\ONEDRIVE\문서\ORCAD\LIBRARY1.OLB")
+      (DeviceIndex "0"))
+    ("SW PUSHBUTTON"
+      (FullPartName "SW PUSHBUTTON.Normal")
+      (LibraryName "C:\CADENCE\SPB_17.2\TOOLS\CAPTURE\LIBRARY\DISCRETE.OLB")
+      (DeviceIndex "0"))
+    (MSP430FR5972IPMR
+      (FullPartName "MSP430FR5972IPMR.Normal")
+      (LibraryName "C:\USERS\GUSGH\ONEDRIVE\문서\ORCAD\MSP430FR5972IPMR.OLB")
+      (DeviceIndex "0"))
+    (MSP430FR5972
+      (FullPartName "MSP430FR5972.Normal")
+      (LibraryName "C:\USERS\GUSGH\ONEDRIVE\문서\ORCAD\LIBRARY1.OLB")
+      (DeviceIndex "0")))
+  (MPSSessionName "gusgh")
+  (GlobalState
+    (FileView
+      (Path "Design Resources")
+      (Path "Design Resources"
+         "C:\Users\gusgh\OneDrive\문서\OrCAD\diving_computer.dsn")
+      (Path "Design Resources"
+         "C:\Users\gusgh\OneDrive\문서\OrCAD\diving_computer.dsn" "SCHEMATIC1")
+      (Path "Design Resources" "Library")
+      (Path "Design Resources" "Library"
+         "C:\Users\gusgh\OneDrive\문서\OrCAD\library1.olb")
+      (Path "Design Resources" "Library"
+         "C:\Users\gusgh\OneDrive\문서\OrCAD\msp430fr5972ipmr.olb")
+      (Select "Design Resources" "Library"
+         "C:\Users\gusgh\OneDrive\문서\OrCAD\library1.olb" "MS5837"))
+    (HierarchyView)
+    (Doc
+      (Type "COrCapturePMDoc")
+      (Frame
+        (Placement "44 0 1 -1 -1 -8 -31 0 200 0 237"))
+      (Tab 0))
+    (Doc
+      (Type "COrSchematicDoc")
+      (Frame
+        (Placement "44 2 3 -1 -1 -8 -31 52 638 52 332")
+        (Scroll "-371 -1")
+        (Zoom "43")
+        (Occurrence "/"))
+      (Path "C:\USERS\GUSGH\ONEDRIVE\문서\ORCAD\DIVING_COMPUTER.DSN")
+      (Schematic "SCHEMATIC1")
+      (Page "PAGE1")))
+  (LastUsedLibraryBrowseDirectory "C:\Cadence\SPB_17.2\tools\capture\library"))
