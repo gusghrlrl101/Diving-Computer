@@ -4,8 +4,10 @@
   (Folder "Design Resources"
     (Folder "Library"
       (File ".\library1.olb"
+        (DisplayName ".\library1.olb")
         (Type "Schematic Library"))
       (File ".\msp430fr5972ipmr.olb"
+        (DisplayName ".\msp430fr5972ipmr.olb")
         (Type "Schematic Library")))
     (NoModify)
     (File ".\diving_computer.dsn"
@@ -15,14 +17,43 @@
   (Folder "Outputs")
   (Folder "PSpice Resources"
     (Folder "Simulation Profiles")
-    (Folder "Model Libraries"
-      (Sort User))
-    (Folder "Stimulus Files"
-      (Sort User))
-    (Folder "Include Files"
-      (Sort User)))
+    (Folder "Model Libraries")
+    (Folder "Stimulus Files")
+    (Folder "Include Files"))
   (DefaultLibraryBrowseDirectory "library\PSpice")
   (PartMRUSelector
+    (BATTERY
+      (FullPartName "BATTERY.Normal")
+      (LibraryName "C:\CADENCE\SPB_17.2\TOOLS\CAPTURE\LIBRARY\DISCRETE.OLB")
+      (DeviceIndex "0"))
+    (R
+      (FullPartName "R.Normal")
+      (LibraryName
+         "C:\CADENCE\SPB_17.2\TOOLS\CAPTURE\LIBRARY\PSPICE\ANALOG.OLB")
+      (DeviceIndex "0"))
+    (NHD-C0216CiZ
+      (FullPartName "NHD-C0216CiZ.Normal")
+      (LibraryName
+         "C:\USERS\HYUNHO\ONEDRIVE - INHA.EDU\4-1\임베디드\DIVING-COMPUTER\ORCAD\LIBRARY1.OLB")
+      (DeviceIndex "0"))
+    (FQ-013
+      (FullPartName "FQ-013.Normal")
+      (LibraryName
+         "C:\USERS\HYUNHO\ONEDRIVE - INHA.EDU\4-1\임베디드\DIVING-COMPUTER\ORCAD\LIBRARY1.OLB")
+      (DeviceIndex "0"))
+    (C
+      (FullPartName "C.Normal")
+      (LibraryName
+         "C:\CADENCE\SPB_17.2\TOOLS\CAPTURE\TCLSCRIPTS\CAPPSPICEMODELAPP\CAPACITOR\HYBRID\SUPPORTFILES\CAPACITOR.OLB")
+      (DeviceIndex "0"))
+    (MS5803-14BA
+      (FullPartName "MS5803-14BA.Normal")
+      (LibraryName
+         "C:\USERS\HYUNHO\ONEDRIVE - INHA.EDU\4-1\임베디드\DIVING-COMPUTER\ORCAD\LIBRARY1.OLB")
+      (DeviceIndex "0"))
+    (GND
+      (LibraryName "C:\CADENCE\SPB_17.2\TOOLS\CAPTURE\LIBRARY\CAPSYM.OLB")
+      (DeviceIndex "0"))
     (VCC
       (LibraryName "C:\CADENCE\SPB_17.2\TOOLS\CAPTURE\LIBRARY\CAPSYM.OLB")
       (DeviceIndex "0"))
@@ -34,23 +65,15 @@
       (FullPartName "MS5837.Normal")
       (LibraryName "C:\USERS\GUSGH\ONEDRIVE\문서\ORCAD\LIBRARY1.OLB")
       (DeviceIndex "0"))
-    ("NTC Thermister"
+    (NTC Thermister
       (FullPartName "NTC Thermister.Normal")
       (LibraryName "C:\USERS\GUSGH\ONEDRIVE\문서\ORCAD\LIBRARY1.OLB")
-      (DeviceIndex "0"))
-    (R
-      (FullPartName "R.Normal")
-      (LibraryName
-         "C:\CADENCE\SPB_17.2\TOOLS\CAPTURE\LIBRARY\PSPICE\ANALOG.OLB")
-      (DeviceIndex "0"))
-    (GND
-      (LibraryName "C:\CADENCE\SPB_17.2\TOOLS\CAPTURE\LIBRARY\CAPSYM.OLB")
       (DeviceIndex "0"))
     (LCD
       (FullPartName "LCD.Normal")
       (LibraryName "C:\USERS\GUSGH\ONEDRIVE\문서\ORCAD\LIBRARY1.OLB")
       (DeviceIndex "0"))
-    ("SW PUSHBUTTON"
+    (SW PUSHBUTTON
       (FullPartName "SW PUSHBUTTON.Normal")
       (LibraryName "C:\CADENCE\SPB_17.2\TOOLS\CAPTURE\LIBRARY\DISCRETE.OLB")
       (DeviceIndex "0"))
@@ -62,21 +85,21 @@
       (FullPartName "MSP430FR5972.Normal")
       (LibraryName "C:\USERS\GUSGH\ONEDRIVE\문서\ORCAD\LIBRARY1.OLB")
       (DeviceIndex "0")))
-  (MPSSessionName "gusgh")
+  (MPSSessionName "HYUNHO")
   (GlobalState
     (FileView
       (Path "Design Resources")
       (Path "Design Resources"
-         "C:\Users\gusgh\OneDrive\문서\OrCAD\diving_computer.dsn")
+         "C:\Users\HYUNHO\OneDrive - inha.edu\4-1\임베디드\Diving-Computer\OrCAD\diving_computer.dsn")
       (Path "Design Resources"
-         "C:\Users\gusgh\OneDrive\문서\OrCAD\diving_computer.dsn" "SCHEMATIC1")
+         "C:\Users\HYUNHO\OneDrive - inha.edu\4-1\임베디드\Diving-Computer\OrCAD\diving_computer.dsn"
+         "SCHEMATIC1")
       (Path "Design Resources" "Library")
       (Path "Design Resources" "Library"
-         "C:\Users\gusgh\OneDrive\문서\OrCAD\library1.olb")
-      (Path "Design Resources" "Library"
-         "C:\Users\gusgh\OneDrive\문서\OrCAD\msp430fr5972ipmr.olb")
-      (Select "Design Resources" "Library"
-         "C:\Users\gusgh\OneDrive\문서\OrCAD\library1.olb" "MS5837"))
+         "C:\Users\HYUNHO\OneDrive - inha.edu\4-1\임베디드\Diving-Computer\OrCAD\library1.olb")
+      (Select "Design Resources"
+         "C:\Users\HYUNHO\OneDrive - inha.edu\4-1\임베디드\Diving-Computer\OrCAD\diving_computer.dsn"
+         "Design Cache"))
     (HierarchyView)
     (Doc
       (Type "COrCapturePMDoc")
@@ -86,11 +109,13 @@
     (Doc
       (Type "COrSchematicDoc")
       (Frame
-        (Placement "44 2 3 -1 -1 -8 -31 52 638 52 332")
-        (Scroll "-371 -1")
-        (Zoom "43")
+        (Placement "44 2 3 -1 -1 -8 -31 78 1681 78 537")
+        (Scroll "-53 44")
+        (Zoom "110")
         (Occurrence "/"))
-      (Path "C:\USERS\GUSGH\ONEDRIVE\문서\ORCAD\DIVING_COMPUTER.DSN")
+      (Path
+         "C:\USERS\HYUNHO\ONEDRIVE - INHA.EDU\4-1\임베디드\DIVING-COMPUTER\ORCAD\DIVING_COMPUTER.DSN")
       (Schematic "SCHEMATIC1")
       (Page "PAGE1")))
-  (LastUsedLibraryBrowseDirectory "C:\Cadence\SPB_17.2\tools\capture\library"))
+  (LastUsedLibraryBrowseDirectory
+     "C:\Cadence\SPB_17.2\tools\capture\library\pspice"))

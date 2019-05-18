@@ -1,0 +1,9 @@
+The conversion of the project was successful.
+
+The new directory structure is as follows:
+
+C:/Users/HYUNHO/OneDrive - inha.edu/4-1/임베디드/Diving-Computer/OrCAD
+    Diving_Computer.opj
+    diving_computer.dsn
+C:/Users/HYUNHO/OneDrive - inha.edu/4-1/임베디드/Diving-Computer/OrCAD/Diving_Computer-PSpiceFiles
+C:/Users/HYUNHO/OneDrive - inha.edu/4-1/임베디드/Diving-Computer/OrCAD/Diving_Computer-PSpiceFiles/SCHEMATIC1
