@@ -95,10 +95,6 @@
     (FileView
       (Path "Design Resources")
       (Path "Design Resources" "Library")
-      (Path "Design Resources" "Library"
-         "C:\Users\HYUNHO\OneDrive - inha.edu\4-1\임베디드\Diving-Computer\OrCAD\library1.olb")
-      (Path "Design Resources" "Library"
-         "C:\Users\HYUNHO\OneDrive - inha.edu\4-1\임베디드\Diving-Computer\OrCAD\msp430fr5972ipmr.olb")
       (Select "Design Resources"))
     (HierarchyView)
     (Doc
