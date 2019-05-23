@@ -90,12 +90,19 @@
       (FullPartName "MSP430FR5972.Normal")
       (LibraryName "C:\USERS\GUSGH\ONEDRIVE\문서\ORCAD\LIBRARY1.OLB")
       (DeviceIndex "0")))
-  (MPSSessionName "HYUNHO")
+  (MPSSessionName "gusgh")
   (GlobalState
     (FileView
       (Path "Design Resources")
+      (Path "Design Resources"
+         "C:\Users\gusgh\OneDrive - inha.edu\4-1\임베디드\Diving-Computer\OrCAD\diving_computer.dsn")
+      (Path "Design Resources"
+         "C:\Users\gusgh\OneDrive - inha.edu\4-1\임베디드\Diving-Computer\OrCAD\diving_computer.dsn"
+         "SCHEMATIC1")
       (Path "Design Resources" "Library")
-      (Select "Design Resources"))
+      (Select "Design Resources"
+         "C:\Users\gusgh\OneDrive - inha.edu\4-1\임베디드\Diving-Computer\OrCAD\diving_computer.dsn"
+         "SCHEMATIC1" "PAGE1"))
     (HierarchyView)
     (Doc
       (Type "COrCapturePMDoc")
@@ -105,12 +112,12 @@
     (Doc
       (Type "COrSchematicDoc")
       (Frame
-        (Placement "44 2 3 -1 -1 -8 -31 78 1681 78 537")
-        (Scroll "-274 -3")
-        (Zoom "81")
+        (Placement "44 2 3 -1 -1 -8 -31 52 1349 52 373")
+        (Scroll "1626 686")
+        (Zoom "200")
         (Occurrence "/"))
       (Path
-         "C:\USERS\HYUNHO\ONEDRIVE - INHA.EDU\4-1\임베디드\DIVING-COMPUTER\ORCAD\DIVING_COMPUTER.DSN")
+         "C:\USERS\GUSGH\ONEDRIVE - INHA.EDU\4-1\임베디드\DIVING-COMPUTER\ORCAD\DIVING_COMPUTER.DSN")
       (Schematic "SCHEMATIC1")
       (Page "PAGE1")))
   (LastUsedLibraryBrowseDirectory
