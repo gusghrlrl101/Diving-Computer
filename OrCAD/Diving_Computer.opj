@@ -89,8 +89,9 @@
     (MSP430FR5972
       (FullPartName "MSP430FR5972.Normal")
       (LibraryName "C:\USERS\GUSGH\ONEDRIVE\문서\ORCAD\LIBRARY1.OLB")
-      (DeviceIndex "0")))
-  (MPSSessionName "3larv")
+      (DeviceIndex "0"))) <<<<<<< HEAD
+  (MPSSessionName "3larv") =======
+  (MPSSessionName "gusgh") >>>>>>> dcaea4044ad9c78ca65d25087380246b711f22c9
   (GlobalState
     (FileView
       (Path "Design Resources")
@@ -99,26 +100,10 @@
       (Path "Design Resources"
          "C:\Users\3larv\OneDrive\바탕 화면\2019-1\임베디드설계\Diving-Computer\OrCAD\diving_computer.dsn"
          "SCHEMATIC1")
-      (Path "Design Resources" "Library")
-      (Select "Design Resources"
-         "C:\Users\3larv\OneDrive\바탕 화면\2019-1\임베디드설계\Diving-Computer\OrCAD\diving_computer.dsn"
-         "SCHEMATIC1" "PAGE1"))
+      (Path "Design Resources" "Library"))
     (HierarchyView)
     (Doc
       (Type "COrCapturePMDoc")
       (Frame
         (Placement "44 0 1 -1 -1 -8 -31 0 200 0 237"))
-      (Tab 0))
-    (Doc
-      (Type "COrSchematicDoc")
-      (Frame
-        (Placement "44 2 3 -1 -1 -8 -31 52 1442 52 498")
-        (Scroll "-23 21")
-        (Zoom "100")
-        (Occurrence "/"))
-      (Path
-         "C:\USERS\3LARV\ONEDRIVE\바탕 화면\2019-1\임베디드설계\DIVING-COMPUTER\ORCAD\DIVING_COMPUTER.DSN")
-      (Schematic "SCHEMATIC1")
-      (Page "PAGE1")))
-  (LastUsedLibraryBrowseDirectory
-     "C:\Cadence\SPB_17.2\tools\capture\library\pspice"))
+      (Tab 0))))
