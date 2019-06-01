@@ -25,7 +25,12 @@ void main(void)
     WDTCTL = WDTPW | WDTHOLD;   // stop watchdog timer
     PM5CTL0 &= ~LOCKLPM5;
 
-    __bis_SR_register(GIE);
+//    MPUCTL0 = MPUPW;
+//    MPUSEGB1 = 0x4000;
+//    MPUSEGB2 = 0x4200;
+//    MPUCTL0 = MPUPW | MPUENA | MPUSEGIE;
+
+    __enable_interrupt();
 
     // LED OUTPUT
     P1DIR |= BIT2;
@@ -41,11 +46,10 @@ void main(void)
 
     delay(1000);
 
-
-
-
-    Divelog* temp = (Divelog*) 0x50000;
-    temp->num = (unsigned char) 0x11;
+    Divelog* temp = (Divelog*) 0x41000;
+    unsigned long temp2 = (unsigned long) 0x41000;
+    __data20_write_char(temp2, (unsigned char) 0x11);
+//    temp->num = (unsigned char) 0x11;
     temp->year = 0x2222;
     temp->date = 0x3333;
     temp->startTime = 0x4444;
@@ -57,9 +61,8 @@ void main(void)
     (temp + 1)->num = 0xDD;
 
 
-
     while (1)
     {
-
+        P1DIR ^= BIT2;
     }
 }
