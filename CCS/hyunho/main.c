@@ -4,9 +4,10 @@
 #include "timer.h"
 #include "switch.h"
 
-unsigned char text1[] = { "0513 14:30 25.5m" };
-unsigned char text2[] = { "D:15.5m  T:17.3c" };
-unsigned char text3[] = { "test test test  " };
+#define MOD_WATER 0
+#define MOD_LOG 1
+
+unsigned int mode = MOD_LOG;
 
 void main(void)
 {
@@ -38,20 +39,26 @@ void main(void)
         (temp + i)->date = 0;
         (temp + i)->startTime = 0;
         (temp + i)->tmp_avg = 0;
-        (temp + i)->tmp_max = 0;
+        (temp + i)->tmp_min = 0;
         (temp + i)->depth_avg = 0;
         (temp + i)->depth_max = 0;
     }
-
     *log_size_addr = 0;
 
-    P1DIR ^= BIT2;
     for (i = 0; i < MAX_LOG; i++)
-        insert_log(1000 + i, (int) i, (int) i, i, i);
+        insert_log(1000 + i, i, i, i, i);
 
-    delete_log(0);
+    delete_log((unsigned char) 0);
 
     while (1)
     {
+        if (mode == MOD_WATER)
+        {
+
+        }
+        else if (mode == MOD_LOG)
+        {
+            make_text_log1(0);
+        }
     }
 }

@@ -4,6 +4,7 @@
 #include "msp430fr5994.h"
 #include "mem.h"
 #include "timer.h"
+#include <stdlib.h>
 
 inline void data_high(void);
 inline void data_low(void);
@@ -19,17 +20,22 @@ void nextline(void);
 void lcd_init(void);
 void clear_display(void);
 
+void make_text_log1(unsigned char num);
+unsigned char* itoc4(unsigned int num);
 
 const char Slave = 0x7C;
 const char Comsend = 0x00;
 const char Datasend = 0x40;
 const char Line2 = 0xC0;
 
-
 #define I2C_SDA BIT0   // Serial Data line
 #define I2C_SCL BIT1   // Serial Clock line
 #define RESET   BIT3   // Serial Clock line
 
+unsigned char text1[] = { "1234567890123456" };
+unsigned char text2[] = { "!@#$%^&*()!@#$%^" };
+unsigned char text3[] = { "abcdefghijklmnop" };
+unsigned char text4[] = { "ABCDEFGHIJKLMNOP" };
 
 inline void data_high(void)
 {
@@ -100,7 +106,6 @@ void I2C_out(unsigned char j)
     clk_high();
     clk_low();
 }
-
 
 /* Writes a 20-char string to the RAM of the LCD. */
 void show(unsigned char *text)
@@ -181,5 +186,43 @@ void clear_display(void)
     I2C_Stop();
 }
 
+void make_text_log1(unsigned char num)
+{
+    Divelog* temp = log_addr + num;
+    // line 1
+    text1[0] = '[';
+    text1[1] = num / 10 + '0';
+    text1[2] = num % 10 + '0';
+    text1[3] = ']';
+    text1[4] = ' ';
+    text1[5] = ' ';
+
+    unsigned char* year = itoc4(temp->year);
+    text1[6] = year[0];
+    text1[7] = year[1];
+    text1[8] = year[2];
+    text1[9] = year[3];
+    text1[10] = '/';
+
+    unsigned char* date = itoc4(temp->date);
+    text1[11] = date[0];
+    text1[12] = date[1];
+    text1[13] = '/';
+    text1[14] = date[2];
+    text1[15] = date[3];
+}
+
+unsigned char* itoc4(unsigned int num)
+{
+    unsigned char c[] = "1234";
+    c[0] = (num / 1000) + '0';
+    num %= 1000;
+    c[1] = (num / 100) + '0';
+    num %= 100;
+    c[2] = (num / 10) + '0';
+    c[3] = (num % 10) + '0';
+
+    return c;
+}
 
 #endif /* LCD_H_ */
