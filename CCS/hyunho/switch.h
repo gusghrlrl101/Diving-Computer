@@ -1,14 +1,8 @@
-/*
- * switch.h
- *
- *  Created on: 2019. 6. 1.
- *      Author: gusgh
- */
-
 #ifndef SWITCH_H_
 #define SWITCH_H_
 
 #include "msp430fr5994.h"
+#include "mem.h"
 
 void switch_init(void);
 

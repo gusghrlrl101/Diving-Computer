@@ -2,6 +2,7 @@
 #define LCD_H_
 
 #include "msp430fr5994.h"
+#include "mem.h"
 #include "timer.h"
 
 inline void data_high(void);

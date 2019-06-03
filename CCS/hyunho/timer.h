@@ -1,14 +1,8 @@
-/*
- * module.h
- *
- *  Created on: 2019. 6. 1.
- *      Author: gusgh
- */
-
 #ifndef TIMER_H_
 #define TIMER_H_
 
 #include "msp430fr5994.h"
+#include "mem.h"
 
 void timer0_init(void);
 inline void delay(int time);
