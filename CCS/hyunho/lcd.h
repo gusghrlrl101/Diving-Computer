@@ -205,8 +205,8 @@ void make_text_log1(unsigned char num)
 {
     Divelog* temp = log_addr + num;
 
-    text1[1] = num / 10 + '0';
-    text1[2] = num % 10 + '0';
+    text1[1] = (num + 1) / 10 + '0';
+    text1[2] = (num + 1) % 10 + '0';
 
     unsigned char* year = itoc4(temp->year);
     text1[6] = year[0];

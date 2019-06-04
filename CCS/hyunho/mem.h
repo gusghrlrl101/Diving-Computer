@@ -17,7 +17,12 @@ typedef struct Divelog
     unsigned int depth_max;
 } Divelog;
 
+// global variable
+#define MOD_WATER 0
+#define MOD_LOG 1
 #define MAX_LOG 30
+unsigned int mode = MOD_LOG;
+unsigned char log_num = 0;
 
 // memory map
 Divelog* log_addr = (Divelog*) 0x1800;  // 1800 ~ 19DF

@@ -4,11 +4,6 @@
 #include "timer.h"
 #include "switch.h"
 
-#define MOD_WATER 0
-#define MOD_LOG 1
-
-unsigned int mode = MOD_LOG;
-unsigned char log_num = 0;
 
 void main(void)
 {
@@ -53,28 +48,5 @@ void main(void)
     delete_log((unsigned char) 0);
     */
 
-    while (1)
-    {
-        if (mode == MOD_WATER)
-        {
-
-        }
-        else if (mode == MOD_LOG)
-        {
-            make_text_log(0);
-            clear_display();
-            show(text1);
-            nextline();
-            show(text2);
-
-            delay(1000);
-
-            clear_display();
-            show(text3);
-            nextline();
-            show(text4);
-
-            delay(1000);
-        }
-    }
+    while (1);
 }
