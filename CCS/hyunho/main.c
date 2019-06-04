@@ -15,6 +15,9 @@ void main(void)
     // LED OUTPUT
     P1DIR |= BIT2;
     P1DIR |= BIT3;
+    // BUZZER OUTPUT
+    P4DIR |= BIT7;
+    P4OUT &= ~BIT7;
 
     switch_init();
     timer0_init();

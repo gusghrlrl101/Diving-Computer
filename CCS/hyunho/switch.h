@@ -9,58 +9,67 @@ void switch_init(void);
 
 void switch_init(void)
 {
-    // 5.3 -> switch1
-    P5DIR &= ~BIT3;
-    P5SEL1 &= ~BIT3;
-    P5SEL0 &= ~BIT3;
-    P5IE |= BIT3;
-    P5IES &= ~BIT3;
-    P5IFG &= ~BIT3;
+    // 6.1 -> switch1
+    P6DIR &= ~BIT1;
+    P6SEL1 &= ~BIT1;
+    P6SEL0 &= ~BIT1;
+    P6IE |= BIT1;
+    P6IES &= ~BIT1;
+    P6IFG &= ~BIT1;
 
-    // 5.7 -> switch2
-    P5DIR &= ~BIT7;
-    P5SEL1 &= ~BIT7;
-    P5SEL0 &= ~BIT7;
-    P5IE |= BIT7;
-    P5IES &= ~BIT7;
-    P5IFG &= ~BIT7;
+    // 6.0 -> switch2
+    P6DIR &= ~BIT0;
+    P6SEL1 &= ~BIT0;
+    P6SEL0 &= ~BIT0;
+    P6IE |= BIT0;
+    P6IES &= ~BIT0;
+    P6IFG &= ~BIT0;
 
-    // 5.0 -> switch3
-    P5DIR &= ~BIT0;
-    P5SEL1 &= ~BIT0;
-    P5SEL0 &= ~BIT0;
-    P5IE |= BIT0;
-    P5IES &= ~BIT0;
-    P5IFG &= ~BIT0;
+    // 3.7 -> switch3
+    P3DIR &= ~BIT7;
+    P3SEL1 &= ~BIT7;
+    P3SEL0 &= ~BIT7;
+    P3IE |= BIT7;
+    P3IES &= ~BIT7;
+    P3IFG &= ~BIT7;
+
+    // 3.6 -> switch4
+    P3DIR &= ~BIT6;
+    P3SEL1 &= ~BIT6;
+    P3SEL0 &= ~BIT6;
+    P3IE |= BIT6;
+    P3IES &= ~BIT6;
+    P3IFG &= ~BIT6;
 }
 
-#pragma vector=PORT5_VECTOR
+#pragma vector=PORT6_VECTOR
 __interrupt void _switch1(void)
 {
     __disable_interrupt();
+
     // switch 1 (up)
-    if (P5IFG & BIT3)
+    if (P6IFG & BIT1)
     {
-        P5IFG &= ~BIT3;
-        P1DIR ^= BIT2;
+        P6IFG &= ~BIT1;
+        P1OUT ^= BIT2;
 
         if (mode == MOD_LOG && *log_size_addr > 0)
         {
             if (++log_num == *log_size_addr)
                 log_num = 0;
 
-            make_text_log();
             clear_display();
+            make_text_log();
             show(text_log1);
             nextline();
             show(text_log2);
         }
     }
     // switch 2 (down)
-    else if (P5IFG & BIT7)
+    else if (P6IFG & BIT0)
     {
-        P5IFG &= ~BIT7;
-        P1DIR ^= BIT2;
+        P6IFG &= ~BIT0;
+        P1OUT ^= BIT2;
 
         if (mode == MOD_LOG && *log_size_addr > 0)
         {
@@ -74,11 +83,20 @@ __interrupt void _switch1(void)
             show(text_log2);
         }
     }
+
+    __enable_interrupt();
+}
+
+#pragma vector=PORT3_VECTOR
+__interrupt void _switch2(void)
+{
+    __disable_interrupt();
+
     // switch 3 (change)
-    else if (P5IFG & BIT0)
+    if (P3IFG & BIT7)
     {
-        P5IFG &= ~BIT0;
-        P1DIR ^= BIT2;
+        P3IFG &= ~BIT7;
+        P1OUT ^= BIT2;
 
         if (mode == MOD_LOG)
         {
@@ -107,9 +125,14 @@ __interrupt void _switch1(void)
             }
         }
     }
+    // switch 4
+    else if (P3IFG & BIT6)
+    {
+        P3IFG &= ~BIT6;
+        P4OUT ^= BIT7;
+    }
 
     __enable_interrupt();
 }
-
 
 #endif /* SWITCH_H_ */
