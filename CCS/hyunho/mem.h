@@ -21,8 +21,16 @@ typedef struct Divelog
 #define MOD_WATER 0
 #define MOD_LOG 1
 #define MAX_LOG 30
-unsigned int mode = MOD_LOG;
+unsigned int mode = MOD_WATER;
 unsigned char log_num = 0;
+
+// assume time from start in water
+unsigned char minute_water = 0;
+unsigned char second_water = 0;
+
+// assume value from sensor in water
+unsigned int tmp_sensor = 0;
+unsigned int depth_sensor = 0;
 
 // memory map
 Divelog* log_addr = (Divelog*) 0x1800;  // 1800 ~ 19DF

@@ -12,19 +12,23 @@ inline void clk_high(void);
 inline void clk_low(void);
 inline void reset_high(void);
 inline void reset_low(void);
-void I2C_Start(void);
-void I2C_Stop(void);
-void I2C_out(unsigned char j);
-void show(unsigned char *text);
-void nextline(void);
-void lcd_init(void);
-void clear_display(void);
+inline void I2C_Start(void);
+inline void I2C_Stop(void);
+inline void I2C_out(unsigned char j);
+inline void show(unsigned char *text);
+inline void nextline(void);
+inline void lcd_init(void);
+inline void clear_display(void);
 
-void make_text_log(unsigned char num);
-void make_text_log1(unsigned char num);
-void make_text_log2(unsigned char num);
-void make_text_log3(unsigned char num);
-void make_text_log4(unsigned char num);
+inline void make_text_water();
+inline void make_text_water1();
+inline void make_text_water2();
+
+inline void make_text_log();
+inline void make_text_log1(unsigned char num);
+inline void make_text_log2(unsigned char num);
+inline void make_text_log3(unsigned char num);
+inline void make_text_log4(unsigned char num);
 
 unsigned char* itoc3(unsigned int num);
 unsigned char* itoc4(unsigned int num);
@@ -38,10 +42,13 @@ const char Line2 = 0xC0;
 #define I2C_SCL BIT1   // Serial Clock line
 #define RESET   BIT3   // Serial Clock line
 
-unsigned char text1[] = { "[NO]  YYYY/MM/DD" };
-unsigned char text2[] = { "hh:mm  DTTminute" };
-unsigned char text3[] = { "A]tm.pC  m]tm.pC" };
-unsigned char text4[] = { "A]DP.Tm  M]DP.Tm" };
+unsigned char text_water1[] = { "hh:mm time]mm:ss" };
+unsigned char text_water2[] = { "D]DP.Tm  T]tm.pC" };
+unsigned char text_log1[] = { "[NO]  YYYY/MM/DD" };
+unsigned char text_log2[] = { "hh:mm  DTTminute" };
+unsigned char text_log3[] = { "A]tm.pC  m]tm.pC" };
+unsigned char text_log4[] = { "A]DP.Tm  M]DP.Tm" };
+unsigned char text_log5[] = { "ERROR: NO LOG !!" };
 
 inline void data_high(void)
 {
@@ -75,7 +82,7 @@ inline void reset_low(void)
 
 /* I2C communication starts when both the data and clock
  * lines go low, in that order. */
-void I2C_Start(void)
+inline void I2C_Start(void)
 {
     clk_high();
     data_high();
@@ -85,7 +92,7 @@ void I2C_Start(void)
 
 /* I2C communication stops with both the clock and data
  * lines going high, in that order. */
-void I2C_Stop(void)
+inline void I2C_Stop(void)
 {
     data_low();
     clk_low();
@@ -94,7 +101,7 @@ void I2C_Stop(void)
 }
 
 /* Outputs 8-bit command or data via I2C lines. */
-void I2C_out(unsigned char j)
+inline void I2C_out(unsigned char j)
 {
     unsigned char d = j;
     int n = 8;
@@ -114,7 +121,7 @@ void I2C_out(unsigned char j)
 }
 
 /* Writes a 20-char string to the RAM of the LCD. */
-void show(unsigned char *text)
+inline void show(unsigned char *text)
 {
     int n;
 
@@ -132,7 +139,7 @@ void show(unsigned char *text)
 }
 
 /* Move to Line 2 */
-void nextline(void)
+inline void nextline(void)
 {
     I2C_Start();
     I2C_out(Slave);
@@ -142,7 +149,7 @@ void nextline(void)
 }
 
 /* Initializes the LCD panel. */
-void lcd_init(void)
+inline void lcd_init(void)
 {
     // LCD OUTPUT
     P7DIR |= I2C_SDA;
@@ -181,90 +188,126 @@ void lcd_init(void)
 }
 
 /* Sends the "clear display" command to the LCD. */
-void clear_display(void)
+inline void clear_display(void)
 {
     I2C_Start();
     I2C_out(Slave);
     I2C_out(Comsend); // Control byte: all following bytes are commands.
     delay(10);
-//    I2C_out(0x78); // Slave address of panel.
     I2C_out(0x01); // Clear display.
     __delay_cycles(27);
     I2C_Stop();
 }
 
-void make_text_log(unsigned char num)
+inline void make_text_water()
 {
-    make_text_log1(num);
-    make_text_log2(num);
-    make_text_log3(num);
-    make_text_log4(num);
+    make_text_water1();
+    make_text_water2();
 }
 
-void make_text_log1(unsigned char num)
+inline void make_text_water1()
+{
+    unsigned char* time = itoc4(*time_addr);
+    text_water1[0] = time[0];
+    text_water1[1] = time[1];
+    text_water1[3] = time[2];
+    text_water1[4] = time[3];
+
+    // minute
+    text_water1[11] = minute_water / 10 + '0';
+    text_water1[12] = minute_water % 10 + '0';
+
+    // second
+    text_water1[14] = second_water / 10 + '0';
+    text_water1[15] = second_water % 10 + '0';
+}
+
+inline void make_text_water2()
+{
+    unsigned char* tmp_text = itoc3(tmp_sensor);
+    text_water2[2] = tmp_text[0];
+    text_water2[3] = tmp_text[1];
+    text_water2[5] = tmp_text[2];
+
+    unsigned char* depth_text = itoc3(depth_sensor);
+    text_water2[11] = depth_text[0];
+    text_water2[12] = depth_text[1];
+    text_water2[14] = depth_text[2];
+}
+
+inline void make_text_log()
+{
+    make_text_log1(log_num);
+    make_text_log2(log_num);
+    make_text_log3(log_num);
+    make_text_log4(log_num);
+}
+
+inline void make_text_log1(unsigned char num)
 {
     Divelog* temp = log_addr + num;
 
-    text1[1] = (num + 1) / 10 + '0';
-    text1[2] = (num + 1) % 10 + '0';
+    // log num
+    text_log1[1] = (num + 1) / 10 + '0';
+    text_log1[2] = (num + 1) % 10 + '0';
 
     unsigned char* year = itoc4(temp->year);
-    text1[6] = year[0];
-    text1[7] = year[1];
-    text1[8] = year[2];
-    text1[9] = year[3];
+    text_log1[6] = year[0];
+    text_log1[7] = year[1];
+    text_log1[8] = year[2];
+    text_log1[9] = year[3];
 
     unsigned char* date = itoc4(temp->date);
-    text1[11] = date[0];
-    text1[12] = date[1];
-    text1[14] = date[2];
-    text1[15] = date[3];
+    text_log1[11] = date[0];
+    text_log1[12] = date[1];
+    text_log1[14] = date[2];
+    text_log1[15] = date[3];
 }
 
-void make_text_log2(unsigned char num)
+inline void make_text_log2(unsigned char num)
 {
     Divelog* temp = log_addr + num;
 
     unsigned char* startTime = itoc4(temp->startTime);
-    text2[0] = startTime[0];
-    text2[1] = startTime[1];
-    text2[3] = startTime[2];
-    text2[4] = startTime[3];
+    text_log2[0] = startTime[0];
+    text_log2[1] = startTime[1];
+    text_log2[3] = startTime[2];
+    text_log2[4] = startTime[3];
 
     unsigned char* diveTime = itoc3((unsigned int) temp->diveTime);
-    text2[7] = diveTime[0];
-    text2[8] = diveTime[1];
-    text2[9] = diveTime[2];
+    text_log2[7] = diveTime[0];
+    text_log2[8] = diveTime[1];
+    text_log2[9] = diveTime[2];
 }
 
-void make_text_log3(unsigned char num)
+inline void make_text_log3(unsigned char num)
 {
     Divelog* temp = log_addr + num;
 
     unsigned char* tmp_avg = itoc3(temp->tmp_avg);
-    text3[2] = tmp_avg[0];
-    text3[3] = tmp_avg[1];
-    text3[5] = tmp_avg[2];
+    text_log3[2] = tmp_avg[0];
+    text_log3[3] = tmp_avg[1];
+    text_log3[5] = tmp_avg[2];
 
     unsigned char* tmp_min = itoc3(temp->tmp_min);
-    text3[11] = tmp_min[0];
-    text3[12] = tmp_min[1];
-    text3[14] = tmp_min[2];
+    text_log3[11] = tmp_min[0];
+    text_log3[12] = tmp_min[1];
+    text_log3[14] = tmp_min[2];
 }
 
-void make_text_log4(unsigned char num)
+inline void make_text_log4(unsigned char num)
 {
     Divelog* temp = log_addr + num;
 
     unsigned char* depth_avg = itoc3(temp->depth_avg);
-    text4[2] = depth_avg[0];
-    text4[3] = depth_avg[1];
-    text4[5] = depth_avg[2];
+    text_log4[2] = depth_avg[0];
+    text_log4[3] = depth_avg[1];
+    text_log4[5] = depth_avg[2];
 
     unsigned char* depth_max = itoc3(temp->depth_max);
-    text4[11] = depth_max[0];
-    text4[12] = depth_max[1];
-    text4[14] = depth_max[2];
+    text_log4[11] = depth_max[0];
+    text_log4[12] = depth_max[1];
+    text_log4[14] = depth_max[2];
 }
 
 unsigned char* itoc3(unsigned int num)

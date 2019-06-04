@@ -20,9 +20,9 @@ void main(void)
     timer0_init();
     lcd_init();
 
-    show(text1);
+    show(text_water1);
     nextline();
-    show(text2);
+    show(text_water2);
 
     delay(1000);
 
