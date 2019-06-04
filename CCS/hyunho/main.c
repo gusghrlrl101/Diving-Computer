@@ -8,6 +8,7 @@
 #define MOD_LOG 1
 
 unsigned int mode = MOD_LOG;
+unsigned char log_num = 0;
 
 void main(void)
 {
@@ -30,6 +31,7 @@ void main(void)
 
     delay(1000);
 
+    /*
     unsigned int i;
     Divelog* temp = log_addr;
     for (i = 0; i < MAX_LOG; i++)
@@ -49,6 +51,7 @@ void main(void)
         insert_log(1000 + i, i, i, i, i);
 
     delete_log((unsigned char) 0);
+    */
 
     while (1)
     {
@@ -58,7 +61,20 @@ void main(void)
         }
         else if (mode == MOD_LOG)
         {
-            make_text_log1(0);
+            make_text_log(0);
+            clear_display();
+            show(text1);
+            nextline();
+            show(text2);
+
+            delay(1000);
+
+            clear_display();
+            show(text3);
+            nextline();
+            show(text4);
+
+            delay(1000);
         }
     }
 }

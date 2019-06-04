@@ -20,7 +20,13 @@ void nextline(void);
 void lcd_init(void);
 void clear_display(void);
 
+void make_text_log(unsigned char num);
 void make_text_log1(unsigned char num);
+void make_text_log2(unsigned char num);
+void make_text_log3(unsigned char num);
+void make_text_log4(unsigned char num);
+
+unsigned char* itoc3(unsigned int num);
 unsigned char* itoc4(unsigned int num);
 
 const char Slave = 0x7C;
@@ -32,10 +38,10 @@ const char Line2 = 0xC0;
 #define I2C_SCL BIT1   // Serial Clock line
 #define RESET   BIT3   // Serial Clock line
 
-unsigned char text1[] = { "1234567890123456" };
-unsigned char text2[] = { "!@#$%^&*()!@#$%^" };
-unsigned char text3[] = { "abcdefghijklmnop" };
-unsigned char text4[] = { "ABCDEFGHIJKLMNOP" };
+unsigned char text1[] = { "[NO]  YYYY/MM/DD" };
+unsigned char text2[] = { "hh:mm  DTTminute" };
+unsigned char text3[] = { "A]tm.pC  m]tm.pC" };
+unsigned char text4[] = { "A]DP.Tm  M]DP.Tm" };
 
 inline void data_high(void)
 {
@@ -178,38 +184,102 @@ void lcd_init(void)
 void clear_display(void)
 {
     I2C_Start();
-
-    I2C_out(0x78); // Slave address of panel.
-    I2C_out(0x00); // Control byte: all following bytes are commands.
+    I2C_out(Slave);
+    I2C_out(Comsend); // Control byte: all following bytes are commands.
+    delay(10);
+//    I2C_out(0x78); // Slave address of panel.
     I2C_out(0x01); // Clear display.
-
+    __delay_cycles(27);
     I2C_Stop();
+}
+
+void make_text_log(unsigned char num)
+{
+    make_text_log1(num);
+    make_text_log2(num);
+    make_text_log3(num);
+    make_text_log4(num);
 }
 
 void make_text_log1(unsigned char num)
 {
     Divelog* temp = log_addr + num;
-    // line 1
-    text1[0] = '[';
+
     text1[1] = num / 10 + '0';
     text1[2] = num % 10 + '0';
-    text1[3] = ']';
-    text1[4] = ' ';
-    text1[5] = ' ';
 
     unsigned char* year = itoc4(temp->year);
     text1[6] = year[0];
     text1[7] = year[1];
     text1[8] = year[2];
     text1[9] = year[3];
-    text1[10] = '/';
 
     unsigned char* date = itoc4(temp->date);
     text1[11] = date[0];
     text1[12] = date[1];
-    text1[13] = '/';
     text1[14] = date[2];
     text1[15] = date[3];
+}
+
+void make_text_log2(unsigned char num)
+{
+    Divelog* temp = log_addr + num;
+
+    unsigned char* startTime = itoc4(temp->startTime);
+    text2[0] = startTime[0];
+    text2[1] = startTime[1];
+    text2[3] = startTime[2];
+    text2[4] = startTime[3];
+
+    unsigned char* diveTime = itoc3((unsigned int) temp->diveTime);
+    text2[7] = diveTime[0];
+    text2[8] = diveTime[1];
+    text2[9] = diveTime[2];
+}
+
+void make_text_log3(unsigned char num)
+{
+    Divelog* temp = log_addr + num;
+
+    unsigned char* tmp_avg = itoc3(temp->tmp_avg);
+    text3[2] = tmp_avg[0];
+    text3[3] = tmp_avg[1];
+    text3[5] = tmp_avg[2];
+
+    unsigned char* tmp_min = itoc3(temp->tmp_min);
+    text3[11] = tmp_min[0];
+    text3[12] = tmp_min[1];
+    text3[14] = tmp_min[2];
+}
+
+void make_text_log4(unsigned char num)
+{
+    Divelog* temp = log_addr + num;
+
+    unsigned char* depth_avg = itoc3(temp->depth_avg);
+    text4[2] = depth_avg[0];
+    text4[3] = depth_avg[1];
+    text4[5] = depth_avg[2];
+
+    unsigned char* depth_max = itoc3(temp->depth_max);
+    text4[11] = depth_max[0];
+    text4[12] = depth_max[1];
+    text4[14] = depth_max[2];
+}
+
+unsigned char* itoc3(unsigned int num)
+{
+    unsigned char c[] = "123";
+    c[0] = (num / 100) + '0';
+    if (c[0] == '0')
+        c[0] = ' ';
+    num %= 100;
+    c[1] = (num / 10) + '0';
+    if (c[1] == '0')
+        c[1] = ' ';
+    c[2] = (num % 10) + '0';
+
+    return c;
 }
 
 unsigned char* itoc4(unsigned int num)
