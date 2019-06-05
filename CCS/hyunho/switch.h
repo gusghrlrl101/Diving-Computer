@@ -67,6 +67,31 @@ __interrupt void _switch1(void)
                 show(text_log2);
             }
         }
+        else if (mode == MOD_WATER)
+        {
+            mode = MOD_GOING;
+
+            minute_water = 0;
+            second_water = 0;
+
+            timer0_enable();
+        }
+        else if (mode == MOD_GOING)
+        {
+            timer0_disable();
+
+            mode = MOD_WATER;
+
+            minute_water = 0;
+            second_water = 0;
+
+            clear_display();
+            make_text_water();
+            show (text_water1);
+            nextline();
+            show (text_water2);
+
+        }
     }
     // switch 2 (LOG: page change, WATER: stop)
     else if (P6IFG & BIT0)
@@ -120,6 +145,7 @@ __interrupt void _switch2(void)
             log_num = 0;
 
             clear_display();
+            make_text_water();
             show(text_water1);
             nextline();
             show(text_water2);

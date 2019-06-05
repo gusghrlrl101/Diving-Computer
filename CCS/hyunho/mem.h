@@ -19,13 +19,14 @@ typedef struct Divelog
 
 // global variable
 #define MOD_WATER 0
-#define MOD_LOG 1
+#define MOD_GOING 1
+#define MOD_LOG 2
 #define MAX_LOG 30
 volatile unsigned int mode = MOD_WATER;
 volatile unsigned int log_page = 0;
 volatile unsigned char log_num = 0;
 
-// assume time from start in water
+// time from start in water
 volatile unsigned char minute_water = 0;
 volatile unsigned char second_water = 0;
 
@@ -42,11 +43,19 @@ unsigned int* time_addr = (unsigned int*) 0x19FC;   // assume current time
 unsigned int* log_size_addr = (unsigned int*) 0x19FE;
 
 // funtion prototype
+inline void delay(int time);
 void insert_log(unsigned int startTime, unsigned int tmp_avg,
                 unsigned int tmp_min, unsigned int depth_avg,
                 unsigned int depth_max);
 void delete_log(unsigned char num);
 inline unsigned int convert_time(unsigned int time);
+
+inline void delay(int time)
+{
+    int i = time;
+    while (i-- > 0)
+        __delay_cycles(1000);
+}
 
 // insert log
 void insert_log(unsigned int startTime, unsigned int tmp_avg,

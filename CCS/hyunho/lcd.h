@@ -3,7 +3,6 @@
 
 #include "msp430fr5994.h"
 #include "mem.h"
-#include "timer.h"
 #include <stdlib.h>
 
 inline void data_high(void);
@@ -207,11 +206,13 @@ inline void make_text_water()
 
 inline void make_text_water1()
 {
-    unsigned char* time = itoc4(*time_addr);
-    text_water1[0] = time[0];
-    text_water1[1] = time[1];
-    text_water1[3] = time[2];
-    text_water1[4] = time[3];
+    unsigned char hour = (RTCTIM1 & 0xFF);
+    text_water1[0] = hour / 10 + '0';
+    text_water1[1] = hour % 10 + '0';
+
+    unsigned char minute = (RTCTIM0 >> 8);
+    text_water1[3] = minute / 10 + '0';
+    text_water1[4] = minute % 10 + '0';
 
     // minute
     text_water1[11] = minute_water / 10 + '0';
@@ -338,10 +339,5 @@ unsigned char* itoc4(unsigned int num)
     return c;
 }
 
-#pragma vector=RTC_C_VECTOR
-__interrupt void rtc_interrupt(void)
-{
-    P4OUT ^= BIT7;
-}
 
 #endif /* LCD_H_ */
