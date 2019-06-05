@@ -69,6 +69,7 @@ __interrupt void _switch1(void)
         }
         else if (mode == MOD_WATER)
         {
+            RTCCTL0_L &= ~RTCTEVIE;
             mode = MOD_GOING;
 
             minute_water = 0;
@@ -79,6 +80,8 @@ __interrupt void _switch1(void)
         else if (mode == MOD_GOING)
         {
             timer0_disable();
+            RTCCTL0_L &= ~RTCTEVIFG;
+            RTCCTL0_L |= RTCTEVIE;
 
             mode = MOD_WATER;
 
@@ -90,7 +93,6 @@ __interrupt void _switch1(void)
             show (text_water1);
             nextline();
             show (text_water2);
-
         }
     }
     // switch 2 (LOG: page change, WATER: stop)
@@ -141,6 +143,8 @@ __interrupt void _switch2(void)
 
         if (mode == MOD_LOG)
         {
+            RTCCTL0_L &= ~RTCTEVIE;
+
             mode = MOD_WATER;
             log_num = 0;
 
@@ -152,6 +156,8 @@ __interrupt void _switch2(void)
         }
         else if (mode == MOD_WATER)
         {
+            RTCCTL0_L &= ~RTCTEVIFG;
+            RTCCTL0_L |= RTCTEVIE;
             mode = MOD_LOG;
             log_num = 0;
             log_page = 0;
