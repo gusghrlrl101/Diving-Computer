@@ -4,17 +4,17 @@
 #include "timer.h"
 #include "switch.h"
 
-
 void main(void)
 {
     WDTCTL = WDTPW | WDTHOLD;   // stop watchdog timer
     PM5CTL0 &= ~LOCKLPM5;
 
+    RTCCTL0 = (RTCKEY | RTCTEVIE);
+    RTCIV ^= RT0PSIFG;
+    RTCCTL13 &= ~RTCHOLD;
+
     __enable_interrupt();
 
-    // LED OUTPUT
-    P1DIR |= BIT2;
-    P1DIR |= BIT3;
     // BUZZER OUTPUT
     P4DIR |= BIT7;
     P4OUT &= ~BIT7;
@@ -26,10 +26,8 @@ void main(void)
     show(text_water1);
     nextline();
     show(text_water2);
+    delay(100);
 
-    delay(1000);
-
-    /*
     unsigned int i;
     Divelog* temp = log_addr;
     for (i = 0; i < MAX_LOG; i++)
@@ -48,8 +46,8 @@ void main(void)
     for (i = 0; i < MAX_LOG; i++)
         insert_log(1000 + i, i, i, i, i);
 
-    delete_log((unsigned char) 0);
-    */
+    while (1)
+    {
 
-    while (1);
+    }
 }

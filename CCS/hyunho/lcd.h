@@ -338,4 +338,10 @@ unsigned char* itoc4(unsigned int num)
     return c;
 }
 
+#pragma vector=RTC_C_VECTOR
+__interrupt void rtc_interrupt(void)
+{
+    P4OUT ^= BIT7;
+}
+
 #endif /* LCD_H_ */
