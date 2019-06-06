@@ -7,10 +7,10 @@
 
 inline void timer0_enable(void);
 inline void timer0_disable(void);
-void delay2(int time);
 
 volatile unsigned int tick_1ms = 0;
-volatile unsigned int delay_1ms = 0;
+volatile unsigned int tick2_1ms = 0;
+volatile unsigned int released = 0;
 
 inline void timer0_enable(void)
 {
@@ -23,18 +23,6 @@ inline void timer0_enable(void)
 inline void timer0_disable(void)
 {
     TA0CCTL0 &= ~CCIE;
-}
-
-void delay2(int time)
-{
-    TA1CCR0 = 999;
-    TA1CTL = TASSEL_2 + MC_2;
-    TA1CCTL0 = CCIE;
-
-    delay_1ms = time;
-    while (delay_1ms > 0)
-        ;
-    TA1CTL = MC_0;
 }
 
 #pragma vector=TIMER0_A0_VECTOR
@@ -62,21 +50,13 @@ __interrupt void _tick_1sec(void)
     TA0CCR0 += 999;
 }
 
-#pragma vector=TIMER1_A0_VECTOR
-__interrupt void _delay(void)
-{
-    delay_1ms--;
-    TA1CCR0 += 999;
-}
-
 #pragma vector=RTC_C_VECTOR
 __interrupt void rtc_interrupt(void)
 {
+    // 1 minute interrupt
     if (RTCCTL0_L & RTCTEVIFG)
     {
         RTCCTL0_L &= ~RTCTEVIFG;
-
-        P4OUT |= BIT7;
         if (mode == MOD_WATER)
         {
             clear_display();
@@ -85,7 +65,6 @@ __interrupt void rtc_interrupt(void)
             nextline();
             show(text_water2);
         }
-        P4OUT &= ~BIT7;
     }
 }
 

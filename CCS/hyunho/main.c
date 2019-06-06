@@ -12,16 +12,20 @@ void main(void)
     WDTCTL = WDTPW | WDTHOLD;   // stop watchdog timer
     PM5CTL0 &= ~LOCKLPM5;
 
-    RTCCTL0 = (RTCKEY | RTCTEVIE);
+    RTCCTL0 = (RTCKEY | RTCTEVIE | ~RTCTEVIFG);
     RTCCTL13 &= ~RTCHOLD;
 
-    set_time();
+//    set_time();
 
     __enable_interrupt();
 
     // BUZZER OUTPUT
     P4DIR |= BIT7;
     P4OUT &= ~BIT7;
+
+    // BACKLIGHT OUTPUT
+    P4DIR |= BIT4;
+    P4OUT &= ~BIT4;
 
     switch_init();
     lcd_init();

@@ -3,6 +3,7 @@
 
 #include "msp430fr5994.h"
 #include "mem.h"
+#include "timer.h"
 #include "lcd.h"
 
 void switch_init(void);
@@ -40,14 +41,22 @@ void switch_init(void)
     P3IE |= BIT6;
     P3IES ^= BIT6;
     P3IFG &= ~BIT6;
+
+    // 5.7 -> switch5
+    P5DIR &= ~BIT7;
+    P5SEL1 &= ~BIT7;
+    P5SEL0 &= ~BIT7;
+    P5IE |= BIT7;
+    P5IES ^= BIT7;
+    P5IFG &= ~BIT7;
 }
 
 #pragma vector=PORT6_VECTOR
-__interrupt void _switch1(void)
+__interrupt void switch_left(void)
 {
     __disable_interrupt();
 
-    // switch 1 (LOG: next, WATER: start)
+    // switch 1 (LOG: next, WATER: start, GOINT: stop)
     if (P6IFG & BIT1)
     {
         P6IFG &= ~BIT1;
@@ -70,11 +79,11 @@ __interrupt void _switch1(void)
         else if (mode == MOD_WATER)
         {
             RTCCTL0_L &= ~RTCTEVIE;
-            mode = MOD_GOING;
 
+            // change mode
+            mode = MOD_GOING;
             minute_water = 0;
             second_water = 0;
-
             timer0_enable();
         }
         else if (mode == MOD_GOING)
@@ -83,19 +92,22 @@ __interrupt void _switch1(void)
             RTCCTL0_L &= ~RTCTEVIFG;
             RTCCTL0_L |= RTCTEVIE;
 
-            mode = MOD_WATER;
+            // save data
 
+            // change mode
+            mode = MOD_WATER;
             minute_water = 0;
             second_water = 0;
 
+            // display
             clear_display();
             make_text_water();
-            show (text_water1);
+            show(text_water1);
             nextline();
-            show (text_water2);
+            show(text_water2);
         }
     }
-    // switch 2 (LOG: page change, WATER: stop)
+    // switch 2 (LOG: page change, WATER: BACKLIGHT)
     else if (P6IFG & BIT0)
     {
         P6IFG &= ~BIT0;
@@ -125,6 +137,9 @@ __interrupt void _switch1(void)
                     show(text_log2);
                 }
             }
+        }else if(mode == MOD_WATER)
+        {
+            P4OUT ^= BIT4;
         }
     }
 
@@ -132,7 +147,7 @@ __interrupt void _switch1(void)
 }
 
 #pragma vector=PORT3_VECTOR
-__interrupt void _switch2(void)
+__interrupt void switch_right(void)
 {
     __disable_interrupt();
 
@@ -208,6 +223,19 @@ __interrupt void _switch2(void)
         }
     }
 
+    __enable_interrupt();
+}
+
+#pragma vector=PORT5_VECTOR
+__interrupt void switch_power(void)
+{
+    __disable_interrupt();
+
+    if (P5IFG & BIT7){
+        P5IFG &= ~BIT7;
+
+        P4OUT ^= BIT7;
+    }
     __enable_interrupt();
 }
 
