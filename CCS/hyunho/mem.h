@@ -18,9 +18,10 @@ typedef struct Divelog
 } Divelog;
 
 // global variable
-#define MOD_WATER 0
-#define MOD_GOING 1
-#define MOD_LOG 2
+#define MOD_OFF 0
+#define MOD_WATER 1
+#define MOD_GOING 2
+#define MOD_LOG 3
 #define MAX_LOG 30
 volatile unsigned int mode = MOD_WATER;
 volatile unsigned int log_page = 0;
@@ -37,16 +38,16 @@ volatile unsigned int depth_sensor = 0;
 // memory map
 Divelog* log_addr = (Divelog*) 0x1800;  // 1800 ~ 19DF
 
-unsigned int* year_addr = (unsigned int*) 0x19F8;   // assume current yead
-unsigned int* date_addr = (unsigned int*) 0x19FA;   // assume current date
-unsigned int* time_addr = (unsigned int*) 0x19FC;   // assume current time
+unsigned int* water_startTime = (unsigned int*) 0x19FA;
+unsigned int* power = (unsigned int*) 0x19FC;
 unsigned int* log_size_addr = (unsigned int*) 0x19FE;
 
 // funtion prototype
 inline void delay(int time);
-void insert_log(unsigned int startTime, unsigned int tmp_avg,
-                unsigned int tmp_min, unsigned int depth_avg,
-                unsigned int depth_max);
+inline void power_init();
+inline void set_time();
+void insert_log(unsigned int tmp_avg, unsigned int tmp_min,
+                unsigned int depth_avg, unsigned int depth_max);
 void delete_log(unsigned char num);
 inline unsigned int convert_time(unsigned int time);
 
@@ -57,14 +58,56 @@ inline void delay(int time)
         __delay_cycles(1000);
 }
 
-// insert log
-void insert_log(unsigned int startTime, unsigned int tmp_avg,
-                unsigned int tmp_min, unsigned int depth_avg,
-                unsigned int depth_max)
+inline void power_init()
 {
-    // calculate diveTime
-    unsigned int finishTime = convert_time(*time_addr);
-    unsigned char diveTime = finishTime - convert_time(startTime);
+    WDTCTL = WDTPW | WDTHOLD;   // stop watchdog timer
+    PMMCTL0_H = PMMPW_H;
+    PM5CTL0 &= ~LOCKLPM5;
+
+    *power = 1;
+
+    RTCCTL0 = (RTCKEY | RTCTEVIE | ~RTCTEVIFG);
+    RTCCTL13 &= ~RTCHOLD;
+
+//    set_time();
+
+    __enable_interrupt();
+
+    // BUZZER OUTPUT
+    P4OUT &= ~BIT7;
+    P4DIR |= BIT7;
+
+    // BACKLIGHT OUTPUT
+    P4OUT &= ~BIT4;
+    P4DIR |= BIT4;
+
+    // LCD OUTPUT
+    P6OUT |= BIT2;
+    P6DIR |= BIT2;
+}
+
+
+inline void set_time(){
+    RTCCTL13 |= RTCHOLD;
+
+    RTCYEAR = 0x2019;
+    RTCMON = 0x06;
+    RTCDAY = 0x06;
+    RTCDOW = 0x04;
+
+    RTCHOUR = 0x02;
+    RTCMIN = 0x07;
+    RTCSEC = 0x00;
+
+    RTCCTL13 &= ~RTCHOLD;
+}
+
+
+// insert log
+void insert_log(unsigned int tmp_avg, unsigned int tmp_min,
+                unsigned int depth_avg, unsigned int depth_max)
+{
+    unsigned char diveTime = minute_water * 60 + second_water;
 
     // if full, delete first log
     if (*log_size_addr == MAX_LOG)
@@ -74,9 +117,9 @@ void insert_log(unsigned int startTime, unsigned int tmp_avg,
 
     // insert datas
     temp->diveTime = diveTime;
-    temp->year = *year_addr;
-    temp->date = *date_addr;
-    temp->startTime = startTime;
+    temp->year = RTCYEAR;
+    temp->date = RTCDATE;
+    temp->startTime = water_startTime;
     temp->tmp_avg = tmp_avg;
     temp->tmp_min = tmp_min;
     temp->depth_avg = depth_avg;

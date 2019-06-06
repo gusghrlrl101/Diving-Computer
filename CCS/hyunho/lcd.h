@@ -32,6 +32,9 @@ inline void make_text_log4(unsigned char num);
 unsigned char* itoc3(unsigned int num);
 unsigned char* itoc4(unsigned int num);
 
+inline void make_sample_data();
+inline void lcd_first();
+
 const char Slave = 0x7C;
 const char Comsend = 0x00;
 const char Datasend = 0x40;
@@ -76,7 +79,7 @@ inline void reset_high(void)
 
 inline void reset_low(void)
 {
-    P6OUT &= RESET;
+    P6OUT &= ~RESET;
 }
 
 /* I2C communication starts when both the data and clock
@@ -206,11 +209,11 @@ inline void make_text_water()
 
 inline void make_text_water1()
 {
-    unsigned char hour = (RTCTIM1 & 0xFF);
+    unsigned char hour = RTCTIM1_L;
     text_water1[0] = hour / 10 + '0';
     text_water1[1] = hour % 10 + '0';
 
-    unsigned char minute = (RTCTIM0 >> 8);
+    unsigned char minute = RTCTIM0_H;
     text_water1[3] = minute / 10 + '0';
     text_water1[4] = minute % 10 + '0';
 
@@ -337,6 +340,38 @@ unsigned char* itoc4(unsigned int num)
     c[3] = (num % 10) + '0';
 
     return c;
+}
+
+
+inline void make_sample_data()
+{
+    unsigned int i;
+    Divelog* temp = log_addr;
+    for (i = 0; i < MAX_LOG; i++)
+    {
+        (temp + i)->diveTime = (unsigned char) 0;
+        (temp + i)->year = 0;
+        (temp + i)->date = 0;
+        (temp + i)->startTime = 0;
+        (temp + i)->tmp_avg = 0;
+        (temp + i)->tmp_min = 0;
+        (temp + i)->depth_avg = 0;
+        (temp + i)->depth_max = 0;
+    }
+    *log_size_addr = 0;
+
+    for (i = 0; i < MAX_LOG; i++)
+        insert_log(i, i, i, i);
+}
+
+
+inline void lcd_first()
+{
+    make_text_water();
+    show(text_water1);
+    nextline();
+    show(text_water2);
+    delay(100);
 }
 
 

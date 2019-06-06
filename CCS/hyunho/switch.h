@@ -14,41 +14,41 @@ void switch_init(void)
     P6DIR &= ~BIT1;
     P6SEL1 &= ~BIT1;
     P6SEL0 &= ~BIT1;
-    P6IE |= BIT1;
-    P6IES ^= BIT1;
     P6IFG &= ~BIT1;
+    P6IE |= BIT1;
+    P6IES |= BIT1;
 
     // 6.0 -> switch2
     P6DIR &= ~BIT0;
     P6SEL1 &= ~BIT0;
     P6SEL0 &= ~BIT0;
-    P6IE |= BIT0;
-    P6IES ^= BIT0;
     P6IFG &= ~BIT0;
+    P6IE |= BIT0;
+    P6IES |= BIT0;
 
     // 3.7 -> switch3
     P3DIR &= ~BIT7;
     P3SEL1 &= ~BIT7;
     P3SEL0 &= ~BIT7;
-    P3IE |= BIT7;
-    P3IES ^= BIT7;
     P3IFG &= ~BIT7;
+    P3IE |= BIT7;
+    P3IES |= BIT7;
 
     // 3.6 -> switch4
     P3DIR &= ~BIT6;
     P3SEL1 &= ~BIT6;
     P3SEL0 &= ~BIT6;
-    P3IE |= BIT6;
-    P3IES ^= BIT6;
     P3IFG &= ~BIT6;
+    P3IE |= BIT6;
+    P3IES |= BIT6;
 
     // 5.7 -> switch5
     P5DIR &= ~BIT7;
     P5SEL1 &= ~BIT7;
     P5SEL0 &= ~BIT7;
-    P5IE |= BIT7;
-    P5IES ^= BIT7;
     P5IFG &= ~BIT7;
+    P5IE |= BIT7;
+    P5IES |= BIT7;
 }
 
 #pragma vector=PORT6_VECTOR
@@ -79,6 +79,7 @@ __interrupt void switch_left(void)
         else if (mode == MOD_WATER)
         {
             RTCCTL0_L &= ~RTCTEVIE;
+            *water_startTime = (RTCTIM1_L << 8) | RTCTIM0_H;
 
             // change mode
             mode = MOD_GOING;
@@ -234,7 +235,34 @@ __interrupt void switch_power(void)
     if (P5IFG & BIT7){
         P5IFG &= ~BIT7;
 
-        P4OUT ^= BIT7;
+        if(*power == 0)
+        {
+            // low power disable
+            PMMCTL0_H = PMMPW_H;
+            PMMCTL0_L &= ~PMMREGOFF;
+            PM5CTL0 &= ~LOCKLPM5;
+            __bic_SR_register_on_exit(LPM3_bits + GIE);
+        }
+        else if(*power > 0)
+        {
+            *power = 0;
+            mode = MOD_OFF;
+
+            // switch interrupt disable
+            P6IE &= ~BIT1;
+            P6IE &= ~BIT0;
+            P3IE &= ~BIT7;
+            P3IE &= ~BIT6;
+
+            // power off LCD, Backlight
+            P6OUT &= ~BIT2;
+            P4OUT &= ~BIT4;
+
+            // low power enable
+            PMMCTL0_H = PMMPW_H;
+            PMMCTL0_L |= PMMREGOFF;
+            __bis_SR_register(LPM3_bits + GIE);
+        }
     }
     __enable_interrupt();
 }
