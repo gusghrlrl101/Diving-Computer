@@ -46,6 +46,7 @@ const char Line2 = 0xC0;
 
 unsigned char text_water1[] = { "hh:mm time]mm:ss" };
 unsigned char text_water2[] = { "D]DP.Tm  T]tm.pC" };
+unsigned char text_water3[] = { "waiting for DIVE" };
 unsigned char text_log1[] = { "[NO]  YYYY/MM/DD" };
 unsigned char text_log2[] = { "hh:mm  DTTminute" };
 unsigned char text_log3[] = { "A]tm.pC  m]tm.pC" };
@@ -342,7 +343,6 @@ unsigned char* itoc4(unsigned int num)
     return c;
 }
 
-
 inline void make_sample_data()
 {
     unsigned int i;
@@ -364,15 +364,13 @@ inline void make_sample_data()
         insert_log(i, i, i, i);
 }
 
-
 inline void lcd_first()
 {
     make_text_water();
     show(text_water1);
     nextline();
-    show(text_water2);
+    show(text_water3);
     delay(100);
 }
-
 
 #endif /* LCD_H_ */

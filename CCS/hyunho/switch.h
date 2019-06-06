@@ -90,8 +90,7 @@ __interrupt void switch_left(void)
         else if (mode == MOD_GOING)
         {
             timer0_disable();
-            RTCCTL0_L &= ~RTCTEVIFG;
-            RTCCTL0_L |= RTCTEVIE;
+            RTCCTL0_L |= (RTCTEVIE & ~RTCTEVIFG);
 
             // save data
 
@@ -105,7 +104,7 @@ __interrupt void switch_left(void)
             make_text_water();
             show(text_water1);
             nextline();
-            show(text_water2);
+            show(text_water3);
         }
     }
     // switch 2 (LOG: page change, WATER: BACKLIGHT)
@@ -138,10 +137,9 @@ __interrupt void switch_left(void)
                     show(text_log2);
                 }
             }
-        }else if(mode == MOD_WATER)
-        {
-            P4OUT ^= BIT4;
         }
+        else if (mode == MOD_WATER || mode == MOD_GOING)
+            P4OUT ^= BIT4;
     }
 
     __enable_interrupt();
@@ -168,12 +166,11 @@ __interrupt void switch_right(void)
             make_text_water();
             show(text_water1);
             nextline();
-            show(text_water2);
+            show(text_water3);
         }
         else if (mode == MOD_WATER)
         {
-            RTCCTL0_L &= ~RTCTEVIFG;
-            RTCCTL0_L |= RTCTEVIE;
+            RTCCTL0_L |= (RTCTEVIE & ~RTCTEVIFG);
             mode = MOD_LOG;
             log_num = 0;
             log_page = 0;
@@ -193,7 +190,7 @@ __interrupt void switch_right(void)
             }
         }
     }
-    // switch 4 (LOG: delete log, WATER: backlight LED)
+    // switch 4 (LOG: delete log)
     else if (P3IFG & BIT6)
     {
         P3IFG &= ~BIT6;
@@ -227,23 +224,24 @@ __interrupt void switch_right(void)
     __enable_interrupt();
 }
 
+// power on / off
 #pragma vector=PORT5_VECTOR
 __interrupt void switch_power(void)
 {
     __disable_interrupt();
 
-    if (P5IFG & BIT7){
+    if (P5IFG & BIT7)
+    {
         P5IFG &= ~BIT7;
 
-        if(*power == 0)
+        if (*power == 0)
         {
             // low power disable
-            PMMCTL0_H = PMMPW_H;
-            PMMCTL0_L &= ~PMMREGOFF;
+            PMMCTL0 = PMMPW & ~PMMREGOFF;
             PM5CTL0 &= ~LOCKLPM5;
             __bic_SR_register_on_exit(LPM3_bits + GIE);
         }
-        else if(*power > 0)
+        else if (*power > 0)
         {
             *power = 0;
             mode = MOD_OFF;
@@ -254,13 +252,16 @@ __interrupt void switch_power(void)
             P3IE &= ~BIT7;
             P3IE &= ~BIT6;
 
+            // minute interrupt disable
+            RTCCTL0 = (RTCKEY & ~RTCTEVIE);
+
             // power off LCD, Backlight
             P6OUT &= ~BIT2;
             P4OUT &= ~BIT4;
 
+
             // low power enable
-            PMMCTL0_H = PMMPW_H;
-            PMMCTL0_L |= PMMREGOFF;
+            PMMCTL0 = (PMMPW | PMMREGOFF);
             __bis_SR_register(LPM3_bits + GIE);
         }
     }

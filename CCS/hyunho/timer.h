@@ -14,7 +14,7 @@ volatile unsigned int released = 0;
 
 inline void timer0_enable(void)
 {
-    TA0CCR0 = 999;
+    TA0CCR0 = 1000;
     TA0CCTL0 = CCIE;
     TA0CTL = TASSEL_2 + MC_2;
     tick_1ms = 0;
@@ -34,11 +34,15 @@ __interrupt void _tick_1sec(void)
 
         if (mode == MOD_GOING)
         {
+            // request
+
             if (++second_water == 60)
             {
                 second_water = 0;
                 minute_water++;
             }
+
+            // response
 
             clear_display();
             make_text_water();
@@ -47,7 +51,7 @@ __interrupt void _tick_1sec(void)
             show(text_water2);
         }
     }
-    TA0CCR0 += 999;
+    TA0CCR0 += 1000;
 }
 
 #pragma vector=RTC_C_VECTOR
@@ -63,7 +67,7 @@ __interrupt void rtc_interrupt(void)
             make_text_water1();
             show(text_water1);
             nextline();
-            show(text_water2);
+            show(text_water3);
         }
     }
 }

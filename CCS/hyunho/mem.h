@@ -66,10 +66,10 @@ inline void power_init()
 
     *power = 1;
 
-    RTCCTL0 = (RTCKEY | RTCTEVIE | ~RTCTEVIFG);
+    RTCCTL0 = (RTCKEY | RTCTEVIE & ~RTCTEVIFG);
     RTCCTL13 &= ~RTCHOLD;
+    //    set_time();
 
-//    set_time();
 
     __enable_interrupt();
 
@@ -95,9 +95,9 @@ inline void set_time(){
     RTCDAY = 0x06;
     RTCDOW = 0x04;
 
-    RTCHOUR = 0x02;
-    RTCMIN = 0x07;
-    RTCSEC = 0x00;
+    RTCHOUR = 0x18;
+    RTCMIN = 0x05;
+    RTCSEC = 0x50;
 
     RTCCTL13 &= ~RTCHOLD;
 }
