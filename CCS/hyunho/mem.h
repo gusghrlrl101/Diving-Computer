@@ -70,7 +70,6 @@ inline void power_init()
     RTCCTL13 &= ~RTCHOLD;
     //    set_time();
 
-
     __enable_interrupt();
 
     // BUZZER OUTPUT
@@ -81,7 +80,7 @@ inline void power_init()
     P4OUT &= ~BIT4;
     P4DIR |= BIT4;
 
-    // LCD OUTPUT
+    // LCD POWER OUTPUT
     P6OUT |= BIT2;
     P6DIR |= BIT2;
 }

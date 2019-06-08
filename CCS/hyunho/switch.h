@@ -142,6 +142,7 @@ __interrupt void switch_left(void)
             P4OUT ^= BIT4;
     }
 
+    __no_operation();
     __enable_interrupt();
 }
 
@@ -221,6 +222,7 @@ __interrupt void switch_right(void)
         }
     }
 
+    __no_operation();
     __enable_interrupt();
 }
 
@@ -265,6 +267,7 @@ __interrupt void switch_power(void)
             __bis_SR_register(LPM3_bits + GIE);
         }
     }
+    __no_operation();
     __enable_interrupt();
 }
 
