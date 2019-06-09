@@ -36,7 +36,6 @@ __interrupt void _tick_1sec(void)
             TA0CCTL0 &= ~CCIE;
             __enable_interrupt();
 
-//            sensor_enable();
             // P5.0 -> SDA (UCB1CTL1)
             P5SEL1 &= ~BIT0;
             P5SEL0 |= BIT0;
@@ -77,37 +76,104 @@ __interrupt void _tick_1sec(void)
 
             calc_data();
 
-            if (tmp_sensor != 0 && tmp_min > tmp_sensor)
-                tmp_min = tmp_sensor;
-            if (depth_max < depth_sensor)
-                depth_max = depth_sensor;
+            if (mode_water == WATER_WAIT)
+            {
+                // start
+                if (depth_sensor > 8)
+                {
+                    // 1 times
+                    P4OUT |= BIT7;
+                    __delay_cycles(100000);
+                    P4OUT &= ~BIT7;
 
-            if (diving_sec == 0)
-            {
-                tmp_avg = tmp_sensor;
-                depth_avg = depth_sensor;
+                    mode_water = WATER_START;
+                }
             }
-            else
+            else if (mode_water == WATER_GOING)
             {
-                long long temp_tmp_avg = tmp_avg * diving_sec + tmp_sensor;
-                long long temp_depth_avg = depth_avg * diving_sec
-                        + depth_sensor;
-                tmp_avg = temp_tmp_avg / (diving_sec + 1);
-                depth_avg = temp_depth_avg / (diving_sec + 1);
+                // finish
+                if (depth_sensor < 4)
+                {
+                    // 2 times
+                    P4OUT |= BIT7;
+                    __delay_cycles(100000);
+                    P4OUT &= ~BIT7;
+                    __delay_cycles(100000);
+                    P4OUT |= BIT7;
+                    __delay_cycles(100000);
+                    P4OUT &= ~BIT7;
+
+                    mode_water = WATER_FINISH;
+                }
             }
 
-            diving_sec++;
-            if (++second_water == 60)
+            if (mode_water == WATER_START)
             {
+                *water_startTime = (RTCHOUR / 10) * 1000 + (RTCHOUR % 10) * 100
+                        + (RTCMIN / 10) * 10 + (RTCMIN % 10);
+                tmp_sensor = 0;
+                depth_sensor = 0;
+                tmp_avg = 0;
+                depth_avg = 0;
+                tmp_min = 999;
+                depth_max = 0;
+                minute_water = 0;
                 second_water = 0;
-                minute_water++;
+                diving_sec = 0;
+
+                mode_water = WATER_GOING;
+            }
+            else if (mode_water == WATER_FINISH)
+            {
+                mode_water = WATER_WAIT;
+                insert_log();
+
+                clear_display();
+                make_text_water();
+                show(text_water1);
+                nextline();
+                show(text_water3);
             }
 
-            clear_display();
-            make_text_water();
-            show(text_water1);
-            nextline();
-            show(text_water2);
+            if (mode_water == WATER_GOING)
+            {
+                if (alarm == 1)
+                    P4OUT |= BIT7;
+                else
+                    P4OUT &= ~BIT7;
+
+                if (tmp_sensor != 0 && tmp_min > tmp_sensor)
+                    tmp_min = tmp_sensor;
+                if (depth_max < depth_sensor)
+                    depth_max = depth_sensor;
+
+                if (diving_sec == 0)
+                {
+                    tmp_avg = tmp_sensor;
+                    depth_avg = depth_sensor;
+                }
+                else
+                {
+                    long long temp_tmp_avg = tmp_avg * diving_sec + tmp_sensor;
+                    long long temp_depth_avg = depth_avg * diving_sec
+                            + depth_sensor;
+                    tmp_avg = temp_tmp_avg / (diving_sec + 1);
+                    depth_avg = temp_depth_avg / (diving_sec + 1);
+                }
+
+                diving_sec++;
+                if (++second_water == 60)
+                {
+                    second_water = 0;
+                    minute_water++;
+                }
+
+                clear_display();
+                make_text_water();
+                show(text_water1);
+                nextline();
+                show(text_water2);
+            }
 
             timer0_enable();
         }

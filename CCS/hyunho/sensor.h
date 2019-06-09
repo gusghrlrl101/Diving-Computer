@@ -88,6 +88,12 @@ void calc_data()
         _pressure_actual = 10130;
     depth_sensor = (unsigned int) (((float) _pressure_actual - 10130.0f)
             / 101.3f);
+
+    alarm = 0;
+    if (depth_sensor < depth_before && depth_before - depth_sensor > 3)
+        alarm = 1;
+    depth_before = depth_sensor;
+
     __no_operation();
 }
 

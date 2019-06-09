@@ -78,29 +78,25 @@ __interrupt void switch_left(void)
         }
         else if (mode == MOD_WATER)
         {
-            P6IE &= ~BIT0;
             P3IE &= ~BIT7;
             P3IE &= ~BIT6;
             P5IE &= ~BIT7;
-            P6IFG &= ~BIT0;
             P3IFG &= ~BIT7;
             P3IFG &= ~BIT6;
             P5IFG &= ~BIT7;
 
             RTCCTL0_L &= ~RTCTEVIE;
-            *water_startTime = (RTCHOUR / 16) * 1000 + (RTCHOUR % 16) * 100 + (RTCMIN / 16) * 10 + (RTCMIN % 16);
-            tmp_sensor = 0;
-            depth_sensor = 0;
-            tmp_avg = 0;
-            depth_avg = 0;
-            tmp_min = 999;
-            depth_max = 0;
 
             // change mode
             mode = MOD_GOING;
-            minute_water = 0;
-            second_water = 0;
-            diving_sec = 0;
+            mode_water = WATER_WAIT;
+
+            clear_display();
+            make_text_water();
+            show(text_water1);
+            nextline();
+            show(text_water3);
+
             timer0_enable();
         }
         else if (mode == MOD_GOING)
@@ -108,19 +104,19 @@ __interrupt void switch_left(void)
             timer0_disable();
             RTCCTL0_L |= (RTCTEVIE & ~RTCTEVIFG);
 
-            insert_log();
-
             // change mode
             mode = MOD_WATER;
             minute_water = 0;
             second_water = 0;
+            isStart = 0;
+            isFinish = 0;
 
             // display
             clear_display();
-            make_text_water();
-            show(text_water1);
+            make_text_main();
+            show(text_main1);
             nextline();
-            show(text_water3);
+            show(text_main2);
 
             P6IE |= BIT0;
             P3IE |= BIT7;
@@ -132,7 +128,6 @@ __interrupt void switch_left(void)
     else if (P6IFG & BIT0)
     {
         P6IFG &= ~BIT0;
-
         if (mode == MOD_LOG)
         {
             if (*log_size_addr > 0)
@@ -268,6 +263,23 @@ __interrupt void switch_power(void)
         {
             *power = 0;
             mode = MOD_OFF;
+
+            // 4 times
+            P4OUT |= BIT7;
+            __delay_cycles(100000);
+            P4OUT &= ~BIT7;
+            __delay_cycles(100000);
+            P4OUT |= BIT7;
+            __delay_cycles(100000);
+            P4OUT &= ~BIT7;
+            __delay_cycles(100000);
+            P4OUT |= BIT7;
+            __delay_cycles(100000);
+            P4OUT &= ~BIT7;
+            __delay_cycles(100000);
+            P4OUT |= BIT7;
+            __delay_cycles(100000);
+            P4OUT &= ~BIT7;
 
             // switch interrupt disable
             P6IE &= ~BIT1;

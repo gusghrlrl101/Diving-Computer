@@ -24,6 +24,13 @@ typedef struct Divelog
 #define MOD_LOG 3
 #define MAX_LOG 30
 volatile unsigned int mode = MOD_WATER;
+
+#define WATER_WAIT 0
+#define WATER_START 1
+#define WATER_GOING 2
+#define WATER_FINISH 3
+volatile unsigned char mode_water = WATER_WAIT;
+
 volatile unsigned int log_page = 0;
 volatile unsigned char log_num = 0;
 
@@ -31,10 +38,14 @@ volatile unsigned char log_num = 0;
 volatile unsigned char minute_water = 0;
 volatile unsigned char second_water = 0;
 volatile unsigned int diving_sec = 0;
+volatile unsigned char isStart = 0;
+volatile unsigned char isFinish = 0;
 
 // value from sensor in water
 volatile unsigned int tmp_sensor = 0;
 volatile unsigned int depth_sensor = 0;
+volatile unsigned int depth_before = 0;
+volatile unsigned char alarm = 0;
 volatile unsigned int tmp_avg = 0;
 volatile unsigned int depth_avg = 0;
 volatile unsigned int tmp_min = 999;
@@ -73,13 +84,26 @@ inline void power_init()
     RTCCTL0 = (RTCKEY | RTCTEVIE & ~RTCTEVIFG);
     RTCCTL13 &= ~RTCHOLD;
 
-//    set_time();
+    set_time();
 
     __enable_interrupt();
 
     // BUZZER OUTPUT
     P4OUT &= ~BIT7;
     P4DIR |= BIT7;
+
+    // 3 times
+    P4OUT |= BIT7;
+    __delay_cycles(100000);
+    P4OUT &= ~BIT7;
+    __delay_cycles(100000);
+    P4OUT |= BIT7;
+    __delay_cycles(100000);
+    P4OUT &= ~BIT7;
+    __delay_cycles(100000);
+    P4OUT |= BIT7;
+    __delay_cycles(100000);
+    P4OUT &= ~BIT7;
 
     // BACKLIGHT OUTPUT
     P4OUT &= ~BIT4;
@@ -99,13 +123,13 @@ inline void set_time()
     RTCCTL13 |= RTCHOLD;
 
     RTCYEAR = 2019;
-    RTCMON = 0x6;
-    RTCDAY = 0x9;
-    RTCDOW = 0x6;
+    RTCMON = 12;
+    RTCDAY = 15;
+    RTCDOW = 6;
 
-    RTCHOUR = 0x10;
-    RTCMIN = 0x15;
-    RTCSEC = 0x39;
+    RTCHOUR = 17;
+    RTCMIN = 27;
+    RTCSEC = 39;
 
     RTCCTL13 &= ~RTCHOLD;
 }
@@ -127,8 +151,8 @@ void insert_log()
     // insert datas
     temp->diveTime = diveTime;
     temp->year = RTCYEAR;
-    temp->date = (RTCMON / 16) * 1000 + (RTCMON % 16) * 100 + (RTCDAY / 16) * 10
-            + (RTCDAY % 16);
+    temp->date = (RTCMON / 10) * 1000 + (RTCMON % 10) * 100 + (RTCDAY / 10) * 10
+            + (RTCDAY % 10);
     temp->startTime = *water_startTime;
     temp->tmp_avg = tmp_avg;
     temp->tmp_min = tmp_min;

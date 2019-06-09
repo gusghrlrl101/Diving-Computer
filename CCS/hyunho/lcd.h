@@ -19,6 +19,10 @@ inline void nextline(void);
 inline void lcd_init(void);
 inline void clear_display(void);
 
+inline void make_text_main();
+inline void make_text_main1();
+inline void make_text_main2();
+
 inline void make_text_water();
 inline void make_text_water1();
 inline void make_text_water2();
@@ -44,6 +48,8 @@ const char Line2 = 0xC0;
 #define I2C_SCL BIT1   // Serial Clock line
 #define RESET   BIT3   // Serial Clock line
 
+unsigned char text_main1[] = { "Diving Computer!" };
+unsigned char text_main2[] = { "YYYY/MM/DD hh:mm" };
 unsigned char text_water1[] = { "hh:mm time]mm:ss" };
 unsigned char text_water2[] = { "D]DP.Tm  T]tm.pC" };
 unsigned char text_water3[] = { "waiting for DIVE" };
@@ -161,27 +167,27 @@ inline void lcd_init(void)
 
     // reset
     reset_low();
-    delay(20);
+    __delay_cycles(40000); // delay 20
     reset_high();
 
     // init function
-    delay(50);
+    __delay_cycles(50000); // delay 50
     I2C_Start();
     I2C_out(Slave);
     I2C_out(Comsend);
-    delay(30);
+    __delay_cycles(30000); // delay
     I2C_out(0x38); // 8-bit bus, 2-line display, normal instruction mode.
     __delay_cycles(40);
     I2C_out(0x39); // 8-bit bus, 2-line display, extension instruction mode.///////////////
     __delay_cycles(40);
     I2C_out(0x14); // Bias set to 1/5.
     __delay_cycles(40);
-    I2C_out(0x79); // Contrast set.
+    I2C_out(0x7F); // Contrast set. C3 ~ C0
     __delay_cycles(40);
-    I2C_out(0x5F); // Icon display on, booster on, contrast set. //////////
+    I2C_out(0x5F); // Icon display on, booster on, contrast set. C5 ~ C4 //////////
     __delay_cycles(40);
-    I2C_out(0x6B); // Follower circuit on, amplifier=
-    delay(400);
+    I2C_out(0x6D); // Follower circuit on, amplifier=
+    __delay_cycles(400000); // delay
     I2C_out(0x0C); // Display on, cursor off.
     __delay_cycles(40);
     I2C_out(0x01); // Clear display. ////////////
@@ -196,10 +202,33 @@ inline void clear_display(void)
     I2C_Start();
     I2C_out(Slave);
     I2C_out(Comsend); // Control byte: all following bytes are commands.
-    delay(10);
+    __delay_cycles(10);
     I2C_out(0x01); // Clear display.
     __delay_cycles(27);
     I2C_Stop();
+}
+
+inline void make_text_main()
+{
+    unsigned int rtcyear = RTCYEAR;
+    text_main2[0] = (rtcyear / 1000) + '0';
+    rtcyear %= 1000;
+    text_main2[1] = (rtcyear / 100) + '0';
+    rtcyear %= 100;
+    text_main2[2] = (rtcyear / 10) + '0';
+    text_main2[3] = (rtcyear % 10) + '0';
+
+    text_main2[5] = (RTCMON / 10) + '0';
+    text_main2[6] = (RTCMON % 10) + '0';
+
+    text_main2[8] = (RTCDAY / 10) + '0';
+    text_main2[9] = (RTCDAY % 10) + '0';
+
+    text_main2[11] = (RTCHOUR / 10) + '0';
+    text_main2[12] = (RTCHOUR % 10) + '0';
+
+    text_main2[14] = (RTCMIN / 10) + '0';
+    text_main2[15] = (RTCMIN % 10) + '0';
 }
 
 inline void make_text_water()
@@ -210,13 +239,11 @@ inline void make_text_water()
 
 inline void make_text_water1()
 {
-    unsigned char hour = RTCHOUR;
-    text_water1[0] = (hour / 16) + '0';
-    text_water1[1] = (hour % 16) + '0';
+    text_water1[0] = (RTCHOUR / 10) + '0';
+    text_water1[1] = (RTCHOUR % 10) + '0';
 
-    unsigned char minute = RTCMIN;
-    text_water1[3] = (minute / 16) + '0';
-    text_water1[4] = (minute % 16) + '0';
+    text_water1[3] = (RTCMIN / 10) + '0';
+    text_water1[4] = (RTCMIN % 10) + '0';
 
     // minute
     text_water1[11] = minute_water / 10 + '0';
@@ -369,11 +396,11 @@ inline void make_sample_data()
 
 inline void lcd_first()
 {
-    make_text_water();
-    show(text_water1);
+    make_text_main();
+    show(text_main1);
     nextline();
-    show(text_water3);
-    delay(100);
+    show(text_main2);
+    __delay_cycles(100000); // delay
 }
 
 #endif /* LCD_H_ */
