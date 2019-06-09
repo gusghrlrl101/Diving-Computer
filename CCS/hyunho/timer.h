@@ -158,8 +158,8 @@ __interrupt void _tick_1sec(void)
                 }
                 else
                 {
-                    long long temp_tmp_avg = tmp_avg * diving_sec + tmp_sensor;
-                    long long temp_depth_avg = depth_avg * diving_sec
+                    long long temp_tmp_avg = (long long) tmp_avg * diving_sec + tmp_sensor;
+                    long long temp_depth_avg = (long long) depth_avg * diving_sec
                             + depth_sensor;
                     tmp_avg = temp_tmp_avg / (diving_sec + 1);
                     depth_avg = temp_depth_avg / (diving_sec + 1);
