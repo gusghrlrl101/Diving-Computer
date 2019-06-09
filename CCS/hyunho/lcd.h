@@ -169,25 +169,25 @@ inline void lcd_init(void)
     I2C_Start();
     I2C_out(Slave);
     I2C_out(Comsend);
-    delay(10);
+    delay(30);
     I2C_out(0x38); // 8-bit bus, 2-line display, normal instruction mode.
-    __delay_cycles(27);
+    __delay_cycles(40);
     I2C_out(0x39); // 8-bit bus, 2-line display, extension instruction mode.///////////////
-    __delay_cycles(27);
+    __delay_cycles(40);
     I2C_out(0x14); // Bias set to 1/5.
-    __delay_cycles(27);
-    I2C_out(0x78); // Contrast set.
-    __delay_cycles(27);
-    I2C_out(0x5C); // Icon display on, booster on, contrast set. //////////
-    __delay_cycles(27);
-    I2C_out(0x6F); // Follower circuit on, amplifier=
-    delay(300);
+    __delay_cycles(40);
+    I2C_out(0x79); // Contrast set.
+    __delay_cycles(40);
+    I2C_out(0x5F); // Icon display on, booster on, contrast set. //////////
+    __delay_cycles(40);
+    I2C_out(0x6B); // Follower circuit on, amplifier=
+    delay(400);
     I2C_out(0x0C); // Display on, cursor off.
-    __delay_cycles(27);
+    __delay_cycles(40);
     I2C_out(0x01); // Clear display. ////////////
-    __delay_cycles(27);
+    __delay_cycles(40);
     I2C_Stop();
-    __delay_cycles(27);
+    __delay_cycles(40);
 }
 
 /* Sends the "clear display" command to the LCD. */
@@ -210,13 +210,13 @@ inline void make_text_water()
 
 inline void make_text_water1()
 {
-    unsigned char hour = RTCTIM1_L;
-    text_water1[0] = hour / 10 + '0';
-    text_water1[1] = hour % 10 + '0';
+    unsigned char hour = RTCHOUR;
+    text_water1[0] = (hour / 16) + '0';
+    text_water1[1] = (hour % 16) + '0';
 
-    unsigned char minute = RTCTIM0_H;
-    text_water1[3] = minute / 10 + '0';
-    text_water1[4] = minute % 10 + '0';
+    unsigned char minute = RTCMIN;
+    text_water1[3] = (minute / 16) + '0';
+    text_water1[4] = (minute % 16) + '0';
 
     // minute
     text_water1[11] = minute_water / 10 + '0';
@@ -229,15 +229,20 @@ inline void make_text_water1()
 
 inline void make_text_water2()
 {
-    unsigned char* tmp_text = itoc3(tmp_sensor);
-    text_water2[2] = tmp_text[0];
-    text_water2[3] = tmp_text[1];
-    text_water2[5] = tmp_text[2];
-
     unsigned char* depth_text = itoc3(depth_sensor);
-    text_water2[11] = depth_text[0];
-    text_water2[12] = depth_text[1];
-    text_water2[14] = depth_text[2];
+    text_water2[2] = depth_text[0];
+    text_water2[3] = depth_text[1];
+    text_water2[5] = depth_text[2];
+
+    if (depth_sensor < 10)
+        text_water2[3] = '0';
+    if (depth_sensor == 0)
+        text_water2[5] = '0';
+
+    unsigned char* tmp_text = itoc3(tmp_sensor);
+    text_water2[11] = tmp_text[0];
+    text_water2[12] = tmp_text[1];
+    text_water2[14] = tmp_text[2];
 }
 
 inline void make_text_log()
@@ -323,8 +328,6 @@ unsigned char* itoc3(unsigned int num)
         c[0] = ' ';
     num %= 100;
     c[1] = (num / 10) + '0';
-    if (c[1] == '0')
-        c[1] = ' ';
     c[2] = (num % 10) + '0';
 
     return c;
@@ -361,7 +364,7 @@ inline void make_sample_data()
     *log_size_addr = 0;
 
     for (i = 0; i < MAX_LOG; i++)
-        insert_log(i, i, i, i);
+        insert_log();
 }
 
 inline void lcd_first()

@@ -29,57 +29,38 @@ inline void timer0_disable(void)
 #pragma vector=TIMER0_A0_VECTOR
 __interrupt void _tick_1sec(void)
 {
-    __enable_interrupt();
-
     if (++tick_1ms >= 1000)
     {
         if (mode == MOD_GOING)
         {
-            //// sensor_enable();
-            __no_operation();
+            TA0CCTL0 &= ~CCIE;
             __enable_interrupt();
 
-            //// read_prom();
-            unsigned char j;
-            for (j = 0; j <= 7; j++)
-            {
-                //// send_cmd(0xA0 + (j * 2));
-                TXData = 0xA0 + (j * 2);
-                TXByteCtr = 1;                          // Load TX byte counter
-                while (UCB1CTLW0 & UCTXSTP)
-                {
+//            sensor_enable();
+            // P5.0 -> SDA (UCB1CTL1)
+            P5SEL1 &= ~BIT0;
+            P5SEL0 |= BIT0;
 
-                }
-                UCB1CTLW0 |= UCTR + UCTXSTT;             // I2C TX, start condition
-                __no_operation();
-                __enable_interrupt();
-                ////
+            // P5.1 -> SCL
+            P5SEL1 &= ~BIT1;
+            P5SEL0 |= BIT1;
 
-                __delay_cycles(1000);
+            UCB1CTLW0 = (UCSWRST | UCSSEL_2 | UCMST | UCMODE_3 | UCSYNC);
+            UCB1BRW = 11;   // bit clock prescaler
+            UCB1I2CSA = 0x77;   // slave address
+            UCB1CTLW0 &= ~UCSWRST;
+            UCB1CTLW1 |= UCASTP_2;
+            UCB1IE |= (UCTXIE0 | UCRXIE0);
 
-                //// recv_data2();
-                UCB1TBCNT = 2;  // number of bytes to be received
-                PRxData = (unsigned char *) RxBuffer;    // Start of RX buffer
-                RXByteCtr = 1;                          // Clear RX byte count
-                while (UCB1CTLW0 & UCTXSTP)
-                {
-
-                }
-                UCB1CTLW0 &= ~UCTR;
-                UCB1CTLW0 |= UCTXSTT;
-                ////
-
-                __delay_cycles(3000);
-                coefficient[j] = (RxBuffer[0] << 8) | RxBuffer[1];
-            }
-            ////
-
+            send_cmd(RRESET);
+            __delay_cycles(4000);
+            read_prom();
             __delay_cycles(3000);
 
             send_cmd(CONV_T);
             __delay_cycles(3000);
             send_cmd(READ);
-            __delay_cycles(1000);
+            __delay_cycles(100);
             recv_data3();
             __delay_cycles(3000);
             result_temp = ((unsigned long) RxBuffer[0] << 16)
@@ -88,28 +69,47 @@ __interrupt void _tick_1sec(void)
             send_cmd(CONV_P);
             __delay_cycles(3000);
             send_cmd(READ);
-            __delay_cycles(1000);
+            __delay_cycles(100);
             recv_data3();
             __delay_cycles(3000);
             result_pres = ((unsigned long) RxBuffer[0] << 16)
                     + ((unsigned long) RxBuffer[1] << 8) + RxBuffer[2];
 
             calc_data();
-            ////
 
+            if (tmp_sensor != 0 && tmp_min > tmp_sensor)
+                tmp_min = tmp_sensor;
+            if (depth_max < depth_sensor)
+                depth_max = depth_sensor;
+
+            if (diving_sec == 0)
+            {
+                tmp_avg = tmp_sensor;
+                depth_avg = depth_sensor;
+            }
+            else
+            {
+                long long temp_tmp_avg = tmp_avg * diving_sec + tmp_sensor;
+                long long temp_depth_avg = depth_avg * diving_sec
+                        + depth_sensor;
+                tmp_avg = temp_tmp_avg / (diving_sec + 1);
+                depth_avg = temp_depth_avg / (diving_sec + 1);
+            }
+
+            diving_sec++;
             if (++second_water == 60)
             {
                 second_water = 0;
                 minute_water++;
             }
 
-            // response
-
             clear_display();
             make_text_water();
             show(text_water1);
             nextline();
             show(text_water2);
+
+            timer0_enable();
         }
     }
     TA0CCR0 += 1000;

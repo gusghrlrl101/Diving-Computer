@@ -240,26 +240,6 @@ void main(void)
     switch_init();
     lcd_init();
     lcd_first();
-    sensor_init();
-
-    __no_operation();
-    __enable_interrupt();
-    //// send_cmd(RRESET);
-    TXData = RRESET;
-    TXByteCtr = 1;                          // Load TX byte counter
-    while (UCB1CTLW0 & UCTXSTP)
-    {
-
-    }
-    UCB1CTLW0 |= UCTR + UCTXSTT;             // I2C TX, start condition
-    __no_operation();
-    __enable_interrupt();
-    ////
-    __delay_cycles(8000);
-
-    while (1)
-    {
-    }
 }
 
 #pragma vector = EUSCI_B1_VECTOR

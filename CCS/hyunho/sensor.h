@@ -18,9 +18,6 @@ volatile unsigned char RxBuffer[128];       // Allocate 128 byte of RAM
 long _temperature_actual;
 long _pressure_actual;
 
-long temperature_reported;
-long pressure_reported;
-
 unsigned int coefficient[8];       // Coefficients;
 unsigned long result_temp;
 unsigned long result_pres;
@@ -29,10 +26,10 @@ inline void read_prom();
 inline void send_cmd(unsigned char data);
 inline void recv_data2();
 inline void recv_data3();
-inline void calc_data();
+void calc_data();
 inline void sensor_enable();
 
-inline void calc_data()
+void calc_data()
 {
     //Create Variables for calculations
     long temp_calc;
@@ -86,9 +83,11 @@ inline void calc_data()
     _temperature_actual = temp_calc;
     _pressure_actual = pressure_calc; // 10;// pressure_calc;
 
-    temperature_reported = _temperature_actual / 100.0f;
-    pressure_reported = _pressure_actual;
-    pressure_reported = pressure_reported / 10.0f;
+    tmp_sensor = _temperature_actual / 10.0f;
+    if (_pressure_actual < 10130)
+        _pressure_actual = 10130;
+    depth_sensor = (unsigned int) (((float) _pressure_actual - 10130.0f)
+            / 101.3f);
     __no_operation();
 }
 
@@ -98,7 +97,7 @@ inline void read_prom()
     for (j = 0; j <= 7; j++)
     {
         send_cmd(0xA0 + (j * 2));
-        __delay_cycles(1000);
+        __delay_cycles(100);
         recv_data2();
         __delay_cycles(3000);
         coefficient[j] = (RxBuffer[0] << 8) | RxBuffer[1];
@@ -164,10 +163,10 @@ inline void sensor_init()
     P5SEL1 &= ~BIT1;
     P5SEL0 |= BIT1;
 
-//    __no_operation();
-//    __enable_interrupt();
-//    send_cmd(RRESET);
-//    __delay_cycles(8000);
+    __no_operation();
+    __enable_interrupt();
+    send_cmd(RRESET);
+    __delay_cycles(8000);
 }
 
 inline void sensor_enable()

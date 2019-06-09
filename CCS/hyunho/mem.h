@@ -30,10 +30,15 @@ volatile unsigned char log_num = 0;
 // time from start in water
 volatile unsigned char minute_water = 0;
 volatile unsigned char second_water = 0;
+volatile unsigned int diving_sec = 0;
 
-// assume value from sensor in water
+// value from sensor in water
 volatile unsigned int tmp_sensor = 0;
 volatile unsigned int depth_sensor = 0;
+volatile unsigned int tmp_avg = 0;
+volatile unsigned int depth_avg = 0;
+volatile unsigned int tmp_min = 999;
+volatile unsigned int depth_max = 0;
 
 // memory map
 Divelog* log_addr = (Divelog*) 0x1800;  // 1800 ~ 19DF
@@ -46,8 +51,7 @@ unsigned int* log_size_addr = (unsigned int*) 0x19FE;
 inline void delay(int time);
 inline void power_init();
 inline void set_time();
-void insert_log(unsigned int tmp_avg, unsigned int tmp_min,
-                unsigned int depth_avg, unsigned int depth_max);
+void insert_log();
 void delete_log(unsigned char num);
 inline unsigned int convert_time(unsigned int time);
 
@@ -68,7 +72,8 @@ inline void power_init()
 
     RTCCTL0 = (RTCKEY | RTCTEVIE & ~RTCTEVIFG);
     RTCCTL13 &= ~RTCHOLD;
-    //    set_time();
+
+//    set_time();
 
     __enable_interrupt();
 
@@ -83,30 +88,32 @@ inline void power_init()
     // LCD POWER OUTPUT
     P6OUT |= BIT2;
     P6DIR |= BIT2;
+
+    // SENSOR POWER OUTPUT
+    P4OUT |= BIT1;
+    P4DIR |= BIT1;
 }
 
-
-inline void set_time(){
+inline void set_time()
+{
     RTCCTL13 |= RTCHOLD;
 
-    RTCYEAR = 0x2019;
-    RTCMON = 0x06;
-    RTCDAY = 0x06;
-    RTCDOW = 0x04;
+    RTCYEAR = 2019;
+    RTCMON = 0x6;
+    RTCDAY = 0x9;
+    RTCDOW = 0x6;
 
-    RTCHOUR = 0x18;
-    RTCMIN = 0x05;
-    RTCSEC = 0x50;
+    RTCHOUR = 0x10;
+    RTCMIN = 0x15;
+    RTCSEC = 0x39;
 
     RTCCTL13 &= ~RTCHOLD;
 }
 
-
 // insert log
-void insert_log(unsigned int tmp_avg, unsigned int tmp_min,
-                unsigned int depth_avg, unsigned int depth_max)
+void insert_log()
 {
-    unsigned char diveTime = minute_water * 60 + second_water;
+    unsigned char diveTime = diving_sec / 60;
 
     // if full, delete first log
     if (*log_size_addr == MAX_LOG)
@@ -114,11 +121,15 @@ void insert_log(unsigned int tmp_avg, unsigned int tmp_min,
 
     Divelog* temp = log_addr + *log_size_addr;
 
+    if (diving_sec % 60 != 0)
+        diveTime++;
+
     // insert datas
     temp->diveTime = diveTime;
     temp->year = RTCYEAR;
-    temp->date = RTCDATE;
-    temp->startTime = water_startTime;
+    temp->date = (RTCMON / 16) * 1000 + (RTCMON % 16) * 100 + (RTCDAY / 16) * 10
+            + (RTCDAY % 16);
+    temp->startTime = *water_startTime;
     temp->tmp_avg = tmp_avg;
     temp->tmp_min = tmp_min;
     temp->depth_avg = depth_avg;
