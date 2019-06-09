@@ -24,6 +24,11 @@
     (Folder "Include Files"))
   (DefaultLibraryBrowseDirectory "library\PSpice")
   (PartMRUSelector
+    (NHD-C0216CiZ
+      (FullPartName "NHD-C0216CiZ.Normal")
+      (LibraryName
+         "C:\USERS\GUSGH\ONEDRIVE - INHA.EDU\4-1\EMBEDDED\DIVING-COMPUTER\ORCAD\LIBRARY1.OLB")
+      (DeviceIndex "0"))
     (C
       (FullPartName "C.Normal")
       (LibraryName
@@ -47,11 +52,6 @@
     (BATTERY
       (FullPartName "BATTERY.Normal")
       (LibraryName "C:\CADENCE\SPB_17.2\TOOLS\CAPTURE\LIBRARY\DISCRETE.OLB")
-      (DeviceIndex "0"))
-    (NHD-C0216CiZ
-      (FullPartName "NHD-C0216CiZ.Normal")
-      (LibraryName
-         "C:\USERS\HYUNHO\ONEDRIVE - INHA.EDU\4-1\임베디드\DIVING-COMPUTER\ORCAD\LIBRARY1.OLB")
       (DeviceIndex "0"))
     (FQ-013
       (FullPartName "FQ-013.Normal")
@@ -102,7 +102,11 @@
   (GlobalState
     (FileView
       (Path "Design Resources")
-      (Path "Design Resources" "Library"))
+      (Path "Design Resources" "Library")
+      (Path "Design Resources" "Library"
+         "C:\Users\gusgh\OneDrive - inha.edu\4-1\Embedded\Diving-Computer\OrCAD\library1.olb")
+      (Select "Design Resources" "Library"
+         "C:\Users\gusgh\OneDrive - inha.edu\4-1\Embedded\Diving-Computer\OrCAD\library1.olb"))
     (HierarchyView)
     (Doc
       (Type "COrCapturePMDoc")
@@ -113,8 +117,8 @@
       (Type "COrSchematicDoc")
       (Frame
         (Placement "44 2 3 -1 -1 -8 -31 52 1349 52 373")
-        (Scroll "125 70")
-        (Zoom "100")
+        (Scroll "-44 202")
+        (Zoom "86")
         (Occurrence "/"))
       (Path
          "C:\USERS\GUSGH\ONEDRIVE - INHA.EDU\4-1\EMBEDDED\DIVING-COMPUTER\ORCAD\DIVING_COMPUTER.DSN")
