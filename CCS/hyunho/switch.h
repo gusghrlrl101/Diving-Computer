@@ -6,7 +6,6 @@
 #include "timer.h"
 #include "lcd.h"
 
-
 void switch_init(void);
 
 void switch_init(void)
@@ -117,10 +116,12 @@ __interrupt void switch_left(void)
             nextline();
             show(text_main2);
 
-            P6IE |= BIT0;
             P3IE |= BIT7;
             P3IE |= BIT6;
             P5IE |= BIT7;
+            P3IFG &= ~BIT7;
+            P3IFG &= ~BIT6;
+            P5IFG &= ~BIT7;
         }
     }
     // switch 2 (LOG: page change, WATER: BACKLIGHT)
@@ -173,19 +174,29 @@ __interrupt void switch_right(void)
 
         if (mode == MOD_LOG)
         {
+            P6IFG &= ~BIT1;
+            P6IFG &= ~BIT0;
+            P3IFG &= ~BIT6;
+            P5IFG &= ~BIT7;
+
             RTCCTL0_L &= ~RTCTEVIE;
 
             mode = MOD_WATER;
             log_num = 0;
 
             clear_display();
-            make_text_water();
-            show(text_water1);
+            make_text_main();
+            show(text_main1);
             nextline();
-            show(text_water3);
+            show(text_main2);
         }
         else if (mode == MOD_WATER)
         {
+            P6IFG &= ~BIT1;
+            P6IFG &= ~BIT0;
+            P3IFG &= ~BIT6;
+            P5IFG &= ~BIT7;
+
             RTCCTL0_L |= (RTCTEVIE & ~RTCTEVIFG);
             mode = MOD_LOG;
             log_num = 0;
@@ -204,6 +215,13 @@ __interrupt void switch_right(void)
                 nextline();
                 show(text_log2);
             }
+        }
+        else if (mode == MOD_GOING)
+        {
+            P6IFG &= ~BIT1;
+            P6IFG &= ~BIT0;
+            P3IFG &= ~BIT6;
+            P5IFG &= ~BIT7;
         }
     }
     // switch 4 (LOG: delete log)
@@ -293,7 +311,6 @@ __interrupt void switch_power(void)
             P6OUT &= ~BIT2;
             P4OUT &= ~BIT4;
             P4OUT &= ~BIT1;
-
 
             // low power enable
             PMMCTL0 = (PMMPW | PMMREGOFF);
