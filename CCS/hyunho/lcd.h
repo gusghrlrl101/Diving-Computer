@@ -167,7 +167,7 @@ inline void lcd_init(void)
 
     // reset
     reset_low();
-    __delay_cycles(40000); // delay 20
+    __delay_cycles(20000); // delay 20
     reset_high();
 
     // init function

@@ -34,6 +34,7 @@ __interrupt void _tick_1sec(void)
         if (mode == MOD_GOING)
         {
             TA0CCTL0 &= ~CCIE;
+
             __enable_interrupt();
 
             // P5.0 -> SDA (UCB1CTL1)
@@ -128,6 +129,9 @@ __interrupt void _tick_1sec(void)
                 mode_water = WATER_WAIT;
                 insert_log();
 
+                minute_water = 0;
+                second_water = 0;
+                diving_sec = 0;
                 clear_display();
                 make_text_water();
                 show(text_water1);

@@ -6,6 +6,7 @@
 #include "timer.h"
 #include "lcd.h"
 
+
 void switch_init(void);
 
 void switch_init(void)
@@ -108,8 +109,6 @@ __interrupt void switch_left(void)
             mode = MOD_WATER;
             minute_water = 0;
             second_water = 0;
-            isStart = 0;
-            isFinish = 0;
 
             // display
             clear_display();

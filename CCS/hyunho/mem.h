@@ -37,9 +37,7 @@ volatile unsigned char log_num = 0;
 // time from start in water
 volatile unsigned char minute_water = 0;
 volatile unsigned char second_water = 0;
-volatile unsigned int diving_sec = 0;
-volatile unsigned char isStart = 0;
-volatile unsigned char isFinish = 0;
+volatile unsigned long diving_sec = 0;
 
 // value from sensor in water
 volatile unsigned int tmp_sensor = 0;
@@ -59,19 +57,10 @@ unsigned int* power = (unsigned int*) 0x19FC;
 unsigned int* log_size_addr = (unsigned int*) 0x19FE;
 
 // funtion prototype
-inline void delay(int time);
 inline void power_init();
 inline void set_time();
 void insert_log();
 void delete_log(unsigned char num);
-inline unsigned int convert_time(unsigned int time);
-
-inline void delay(int time)
-{
-    int i = time;
-    while (i-- > 0)
-        __delay_cycles(1000);
-}
 
 inline void power_init()
 {
@@ -123,13 +112,13 @@ inline void set_time()
     RTCCTL13 |= RTCHOLD;
 
     RTCYEAR = 2019;
-    RTCMON = 12;
-    RTCDAY = 15;
+    RTCMON = 6;
+    RTCDAY = 9;
     RTCDOW = 6;
 
-    RTCHOUR = 17;
-    RTCMIN = 27;
-    RTCSEC = 39;
+    RTCHOUR = 20;
+    RTCMIN = 40;
+    RTCSEC = 0;
 
     RTCCTL13 &= ~RTCHOLD;
 }
@@ -189,14 +178,6 @@ void delete_log(unsigned char num)
 
     // decrease size
     *log_size_addr = log_size - 1;
-}
-
-// convert hh:mm -> mmm
-inline unsigned int convert_time(unsigned int time)
-{
-    unsigned h = time / 100;
-    unsigned m = time % 100;
-    return h * 60 + m;
 }
 
 #endif /* MEM_H_ */
