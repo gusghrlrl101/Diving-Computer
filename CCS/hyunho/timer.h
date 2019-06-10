@@ -153,16 +153,23 @@ __interrupt void _tick_1sec(void)
 
                 if (diving_sec == 0)
                 {
+//                    tmp_avg_f = (float) tmp_sensor;
+//                    depth_avg_f = (float) depth_sensor;
+
                     tmp_avg = tmp_sensor;
                     depth_avg = depth_sensor;
                 }
                 else
                 {
+//                    float temp_tmp_avg_f = tmp_avg_f * (float)diving_sec + (float)tmp_sensor;
+//                    float temp_depth_avg_f = depth_avg_f * (float)diving_sec + (float)depth_sensor;
+
                     long long temp_tmp_avg = (long long) tmp_avg * diving_sec + tmp_sensor;
                     long long temp_depth_avg = (long long) depth_avg * diving_sec
                             + depth_sensor;
-                    tmp_avg = temp_tmp_avg / (diving_sec + 1);
-                    depth_avg = temp_depth_avg / (diving_sec + 1);
+
+                    tmp_avg = (unsigned int) (temp_tmp_avg / (diving_sec + 1));
+                    depth_avg = (unsigned int) (temp_depth_avg / (diving_sec + 1));
                 }
 
                 diving_sec++;

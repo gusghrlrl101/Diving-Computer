@@ -46,12 +46,15 @@ volatile unsigned int depth_before = 0;
 volatile unsigned char alarm = 0;
 volatile unsigned int tmp_avg = 0;
 volatile unsigned int depth_avg = 0;
+volatile float tmp_avg_f = 0.0f;
+volatile float depth_avg_f = 0.0f;
 volatile unsigned int tmp_min = 999;
 volatile unsigned int depth_max = 0;
 
 // memory map
 Divelog* log_addr = (Divelog*) 0x1800;  // 1800 ~ 19DF
 
+unsigned int* firstPower = (unsigned int*) 0x19F0;
 unsigned int* water_startTime = (unsigned int*) 0x19FA;
 unsigned int* power = (unsigned int*) 0x19FC;
 unsigned int* log_size_addr = (unsigned int*) 0x19FE;
@@ -73,8 +76,12 @@ inline void power_init()
     RTCCTL0 = (RTCKEY | RTCTEVIE & ~RTCTEVIFG);
     RTCCTL13 &= ~RTCHOLD;
 
-    set_time();
-
+    *firstPower = 1;
+    if (*firstPower == 1)
+    {
+        set_time();
+        *firstPower = 0;
+    }
     __enable_interrupt();
 
     // BUZZER OUTPUT
@@ -113,11 +120,11 @@ inline void set_time()
 
     RTCYEAR = 2019;
     RTCMON = 6;
-    RTCDAY = 9;
-    RTCDOW = 6;
+    RTCDAY = 10;
+    RTCDOW = 0;
 
-    RTCHOUR = 20;
-    RTCMIN = 40;
+    RTCHOUR = 14;
+    RTCMIN = 20;
     RTCSEC = 0;
 
     RTCCTL13 &= ~RTCHOLD;

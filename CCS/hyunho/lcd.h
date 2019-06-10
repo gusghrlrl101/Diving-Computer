@@ -182,7 +182,7 @@ inline void lcd_init(void)
     __delay_cycles(40);
     I2C_out(0x14); // Bias set to 1/5.
     __delay_cycles(40);
-    I2C_out(0x73); // Contrast set. C3 ~ C0
+    I2C_out(0x78); // Contrast set. C3 ~ C0
     __delay_cycles(40);
     I2C_out(0x5C); // Icon display on, booster on, contrast set. C5 ~ C4 //////////
     __delay_cycles(40);
