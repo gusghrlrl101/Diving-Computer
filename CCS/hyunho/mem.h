@@ -124,7 +124,7 @@ inline void set_time()
     RTCDOW = 0;
 
     RTCHOUR = 14;
-    RTCMIN = 20;
+    RTCMIN = 31;
     RTCSEC = 0;
 
     RTCCTL13 &= ~RTCHOLD;
